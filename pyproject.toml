@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "nonebot_plugin_AL"
+version = "0.0.1"
+description = "L4D2 server related operations plugin for NoneBot2"
+authors = ["Agnes_Digital <Z735803792@163.com>"]
+license = "GPLv3"
+readme = "README.md"
+homepage = "https://github.com/Agnes4m/nonebot_plugin_AL"
+repository = "https://github.com/Agnes4m/nonebot_plugin_AL"
+keywords = ["game", , "nonebot2", "plugin"]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+]
+include = [
+    "LICENSE","README.md"
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+nonebot2 = "^2.0.0rc3"
+nonebot-adapter-onebot = ">=2.2.1"
+
+aiohttp = ">=3.8.3"
+bs4 = "^0.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
