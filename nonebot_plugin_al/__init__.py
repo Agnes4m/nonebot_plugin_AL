@@ -14,6 +14,9 @@ __plugin_meta__ = PluginMetadata(
     name="碧蓝航线攻略",
     description='碧蓝航线井号榜等等攻略',
     usage='碧蓝航线攻略',
+    type="application",
+    homepage="https://github.com/Agnes4m/nonebot_plugin_AL",
+    supported_adapters={"~onebot.v11"},
     extra={
         "version": __version__,
         "author": "Agnes4m <Z735803792@163.com>",
