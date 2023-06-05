@@ -1,18 +1,8 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+from .api import get_data
 
-async def get_data(url:str):
-    """获取网页内容"""
-    headers = {
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers, timeout=600) as response:
-            if response.status == 200:
-                return await response.read()
-            else:
-                return None
             
 # async def data_to_bs4(data:bytes):
 #     soup = BeautifulSoup(data, 'html.parser')

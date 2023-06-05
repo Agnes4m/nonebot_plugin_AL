@@ -1,4 +1,3 @@
-import aiohttp
 
 from nonebot import on_command
 from nonebot.params import CommandArg
