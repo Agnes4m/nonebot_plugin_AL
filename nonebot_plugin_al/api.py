@@ -1,11 +1,5 @@
-# from azurlane import AzurAPI
-# import os
-# import json
-# import certifi
-# import ssl
-# import httpx
-# ssl_context = ssl.create_default_context(cafile=certifi.where())
 import aiohttp
+
 async def get_data(url:str):
     """获取网页内容"""
     headers = {
@@ -17,6 +11,14 @@ async def get_data(url:str):
                 return await response.read()
             else:
                 return None
+# from azurlane import AzurAPI
+# import os
+# import json
+# import certifi
+# import ssl
+# import httpx
+# ssl_context = ssl.create_default_context(cafile=certifi.where())
+
 
 # os.environ['REQUESTS_CA_BUNDLE'] = './cacert.pem'
 # api = AzurAPI()
@@ -32,13 +34,13 @@ async def get_data(url:str):
 # print(msg)
 # api.updater.update()
 
-import httpx
+# import httpx
 
-async def get_ship_msg(name:str):
-    "获取单个船的页面html"
-    msg:bytes = await get_data(url=f"https://wiki.biligame.com/blhx/{name}")
-    msg_str = msg.decode('utf-8')
-    return msg_str
+# async def get_ship_msg(name:str):
+#     "获取单个船的页面html"
+#     msg:bytes = await get_data(url=f"https://wiki.biligame.com/blhx/{name}")
+#     msg_str = msg.decode('utf-8')
+#     return msg_str
 # css = httpx.get("https://wiki.biligame.com/blhx/%E6%96%B0%E6%B3%BD%E8%A5%BF",headers=headers).content
 # with open("text.html",mode="w",encoding="utf-8")as f:
 #     f.write(msg)

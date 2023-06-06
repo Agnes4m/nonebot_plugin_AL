@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     MessageSegment
 )
-from .bili import jinghao,get_data
+from .bili import jinghao,get_data, get_ship_msg
 
 __version__ = "0.0.1"
 __plugin_meta__ = PluginMetadata(
@@ -27,10 +27,16 @@ al_command = on_command('al',aliases={'碧蓝'},priority=30,block=True)
 tag_ser = on_command('alhelp',aliases={'碧蓝指令','碧蓝帮助'},priority=30,block=True)
 tags = ['强度榜','装备榜','金部件榜','萌新榜','兵器榜','专武榜',
         '兑换榜','研发榜','改造榜','跨队榜','pt榜','氪金榜','打捞主线榜','打捞作战榜']
+ships = {
+    "新泽西":[
+        "新泽西",
+        "几把兔"
+    ]
+}
 
 @tag_ser.handle()
 async def _(matcher:Matcher):
-    msg = '碧蓝帮助指令\n'
+    msg = '指令:碧蓝+\n'
     data:str = ''
     for one in tags:
         data += f'{one} | '
@@ -41,6 +47,11 @@ async def _(matcher:Matcher):
 async def _(matcher:Matcher,args:Message = CommandArg()):
     word = args.extract_plain_text()
     if word in tags:
+        # 井号榜
         await matcher.finish(MessageSegment.image(await get_data(await jinghao(word))))
     else:
+        # 舰船搜索
+        for key, value in ships.items():
+            if any(word in sublist for sublist in value):
+                await matcher.finish(MessageSegment.image(await get_ship_msg(key)))
         await matcher.finish()
