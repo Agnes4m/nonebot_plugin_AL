@@ -1,7 +1,9 @@
 import asyncio
 from bs4 import BeautifulSoup
 from pathlib import Path
-            
+import time
+        
+        
 from nonebot_plugin_htmlrender import (
     html_to_pic,
 )
@@ -51,21 +53,61 @@ async def jinghao(tag):
 
 async def get_ship_msg(name:str):
     "获取单个船的页面html"
+    start_time = time.time()
     Path("data/al/ship").mkdir(parents=True, exist_ok=True)
     ship_path = Path(f"data/al/ship/{name}.html")
-    if not ship_path.exists():
-        msg:bytes = await get_data(url=f"https://wiki.biligame.com/blhx/{name}")
-        msg_str = msg.decode('utf-8')
-        with open(ship_path,mode="w" ,encoding="utf-8")as f:
-            f.write(msg_str)
-    else:
-        with open(ship_path,mode="r" ,encoding="utf-8")as f:
-            msg_str = f.read()
-    msg_img = await html_to_pic(msg_str)
-
+    # if not ship_path.exists():
+    msg:BeautifulSoup = await get_data(url=f"https://wiki.biligame.com/blhx/{name}",mode="html")
+    msg_str = str(await ship_html_select(await ship_html_remove( await soup_del_gif(msg))))
+    with open(ship_path,mode="w" ,encoding="utf-8")as f:
+        f.write(msg_str)
+    # else:
+    #     with open(ship_path,mode="r" ,encoding="utf-8")as f:
+    #         msg_str = f.read()
+    msg_img:bytes = await html_to_pic(msg_str)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"耗时: {elapsed_time} 秒")
     return msg_img
-# css = httpx.get("https://wiki.biligame.com/blhx/%E6%96%B0%E6%B3%BD%E8%A5%BF",headers=headers).content
 
+async def ship_html_select(soup:BeautifulSoup):
+    # 修改为图片html
+    unwanted_elements = [
+        "div.wiki-header.navbar.navbar-default.navbar-static-top.container",
+        "div#siteNotice.mw-body-content",
+        "div.mw-indicators",
+        "div#headBox",
+        "div.wiki-componment-rank",
+        "div#copyField",
+        "div.qchar-container",
+        "panel panel-shiptable",
+        "div.footer-public.visible-md-block.visible-lg-block"
+    ]
+    for selector in unwanted_elements:
+        elements = soup.select(selector)
+        for element in elements:
+            element.extract()
+    return soup
+
+async def ship_html_remove(soup: BeautifulSoup):
+    start_tag = soup.find("div", class_="thumb tright")
+    end_tag = soup.find("div", class_="mw-references-wrap")
+    if start_tag and end_tag:
+        current_tag = start_tag
+        while current_tag and current_tag != end_tag:
+            next_tag = current_tag.find_next()
+            current_tag.decompose()
+            current_tag = next_tag
+    return soup
+
+async def soup_del_gif(soup: BeautifulSoup):
+    # 删除gif图
+    gif_images = soup.select('img[src$=".gif"]')
+
+    for img in gif_images:
+        img.extract()
+        
+    return soup
     
 if __name__== '__main__':
     asyncio.run(get_ship_msg("新泽西"))
