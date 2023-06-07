@@ -6,7 +6,7 @@
 
 <div align="center">
 
-# nonebot_plugin_AL 0.0.1
+# nonebot_plugin_AL 0.1.0
 
 _✨Nonebot & 碧蓝航线攻略✨_
 
@@ -35,6 +35,7 @@ _✨Nonebot & 碧蓝航线攻略✨_
 - 碧蓝帮助 | 碧蓝指令
 - 显示的指令为【碧蓝】+xxx
 
-## 介绍
+## 功能
 
-爬取b站井号榜攻略等，在群聊展示攻略
+1、b站wiki井号榜一图流
+2、舰船图鉴

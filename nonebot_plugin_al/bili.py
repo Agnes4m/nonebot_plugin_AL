@@ -58,7 +58,7 @@ async def get_ship_msg(name:str):
     ship_path = Path(f"data/al/ship/{name}.html")
     # if not ship_path.exists():
     msg:BeautifulSoup = await get_data(url=f"https://wiki.biligame.com/blhx/{name}",mode="html")
-    msg_str = str(await ship_html_select(await ship_html_remove( await soup_del_gif(msg))))
+    msg_str = str(await ship_html_select(await soup_del_gif(msg)))
     with open(ship_path,mode="w" ,encoding="utf-8")as f:
         f.write(msg_str)
     # else:
@@ -72,33 +72,14 @@ async def get_ship_msg(name:str):
 
 async def ship_html_select(soup:BeautifulSoup):
     # 修改为图片html
-    unwanted_elements = [
-        "div.wiki-header.navbar.navbar-default.navbar-static-top.container",
-        "div#siteNotice.mw-body-content",
-        "div.mw-indicators",
-        "div#headBox",
-        "div.wiki-componment-rank",
-        "div#copyField",
-        "div.qchar-container",
-        "panel panel-shiptable",
-        "div.footer-public.visible-md-block.visible-lg-block"
-    ]
-    for selector in unwanted_elements:
-        elements = soup.select(selector)
-        for element in elements:
-            element.extract()
-    return soup
+    html_str = soup.prettify()
+    start_index = html_str.index('<!DOCTYPE html>')
+    css_msg = html_str[:start_index]
+    base_msg = soup.select_one("div[class='row']").prettify()
+    wp_msg = soup.find("div",class_="panel panel-shiptable").prettify()
+    fina_soup = css_msg + base_msg + wp_msg
+    return fina_soup
 
-async def ship_html_remove(soup: BeautifulSoup):
-    start_tag = soup.find("div", class_="thumb tright")
-    end_tag = soup.find("div", class_="mw-references-wrap")
-    if start_tag and end_tag:
-        current_tag = start_tag
-        while current_tag and current_tag != end_tag:
-            next_tag = current_tag.find_next()
-            current_tag.decompose()
-            current_tag = next_tag
-    return soup
 
 async def soup_del_gif(soup: BeautifulSoup):
     # 删除gif图
