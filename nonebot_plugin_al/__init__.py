@@ -57,6 +57,7 @@ async def _(matcher:Matcher,args:Message = CommandArg()):
         await matcher.finish(MessageSegment.image(await get_data(await jinghao(word))))
     elif word.startswith("角色"):
         # 舰船搜索
+        word = word[3:]
         for key, value in ships.items():
             if any(word in sublist for sublist in value):
                 await matcher.finish(MessageSegment.image(await get_ship_msg(key)))
