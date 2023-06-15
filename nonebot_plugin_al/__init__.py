@@ -32,8 +32,8 @@ __plugin_meta__ = PluginMetadata(
     },
 )
 
-al_command = on_command('al',aliases={'碧蓝'},priority=30,block=True)
-tag_ser = on_command('alhelp',aliases={'碧蓝指令','碧蓝帮助'},priority=30,block=True)
+al_command = on_command('al',aliases={'碧蓝'},priority=50,block=True)
+tag_ser = on_command('alhelp',aliases={'碧蓝指令','碧蓝帮助'},priority=30,block=False)
 tags = ['强度榜','装备榜','金部件榜','萌新榜','兵器榜','专武榜',
         '兑换榜','研发榜','改造榜','跨队榜','pt榜','氪金榜','打捞主线榜','打捞作战榜']
 
@@ -46,9 +46,11 @@ async def _(matcher:Matcher):
     data:str = ''
     for one in tags:
         data += f'{one} | '
-    msg += data
-    msg += "----------"
-    msg += "碧蓝角色【角色名称】"
+    msg += """data
+    ----------
+    碧蓝角色【角色名称】
+    碧蓝装备【名称】
+    """
     await matcher.finish(msg)
 
 @al_command.handle()

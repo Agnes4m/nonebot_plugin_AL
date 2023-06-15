@@ -54,7 +54,6 @@ pip install nonebot_plugin_al
 git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 ```
 
-
 ## 指令
 
 - 【总】碧蓝帮助 | 碧蓝指令
