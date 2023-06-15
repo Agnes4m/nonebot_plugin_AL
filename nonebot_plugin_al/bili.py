@@ -5,10 +5,11 @@ import time
 
 from nonebot import require
 from nonebot.log import logger
-require("nonebot_plugin_htmlrender")
 from nonebot_plugin_htmlrender import (
     html_to_pic,
 )
+require("nonebot_plugin_htmlrender")
+
 
 from .api import get_data
 
