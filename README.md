@@ -39,6 +39,8 @@
 
 2、舰船装备图鉴
 
+3、(20%完成)移植大部分[blhx](https://github.com/Gaylone/blhx_wiki)（原hoshino改项目）的大部分功能
+
 
 ## 安装
 
@@ -62,4 +64,8 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 - 2、碧蓝角色【角色名称】
 - 3、碧蓝装备【装备名称】
 
+## 感谢
+
+- [AzurAPI](https://github.com/AzurAPI/azurapi-js-setup)持续更新的碧蓝航线数据库
+- [blhx_wiki](https://github.com/Gaylone/blhx_wiki) - hoshino碧蓝航线项目（已停止维护）
 
