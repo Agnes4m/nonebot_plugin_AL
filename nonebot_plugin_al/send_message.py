@@ -23,7 +23,7 @@ class BLHX_BASE:
         bot:Bot,
         arg:Message = CommandArg()
         ):
-        SAVE_PATH = str(SAVE_PATH)
+        SAVE_PATH = Path().cwd().joinpath('data/al')
         try:
             args = arg.extract_plain_text().split()
             if len(args) == 2:
@@ -89,8 +89,8 @@ class BLHX_BASE:
         event:Event,
         bot:Bot
         ):
-        SAVE_PATH = str('data/al')
-        msg = MessageSegment.image("file:///" + SAVE_PATH + "/ship_html/images/gallery/" + get_random_gallery())
+        SAVE_PATH = Path().cwd().joinpath('data/al/ship_html/images/gallery/' / get_random_gallery())
+        msg = MessageSegment.image("file:///" + str(SAVE_PATH))
         await bot.send(event=event,message=msg, at_sender=True)
 
 
@@ -99,10 +99,11 @@ class BLHX_BASE:
         event:Event,
         bot:Bot
         ):
-        msg = "1.查询舰船信息命令：”blhx [无需和谐的中文船名]“\n" \
-            "2.查询舰船皮肤命令：”blhx [无需和谐的中文船名] [皮肤名]“ 皮肤名为”原皮”则查询原皮，为“婚纱”则查询婚纱，如果皮肤名有空格则用_替代\n" \
-            "3.查询加载时的过场动画：“blhx过场”" \
-            "4.查询强度榜：“blhx强度榜”"
+        msg = """
+        1.查询舰船信息命令：”blhx [无需和谐的中文船名]
+        2.查询舰船皮肤命令：”blhx [无需和谐的中文船名] [皮肤名]“ 皮肤名为”原皮”则查询原皮，为“婚纱”则查询婚纱，如果皮肤名有空格则用_替代
+        3.查询加载时的过场动画：“blhx过场
+        4.查询强度榜：“blhx强度榜"""
         await bot.send(event=event,message=msg,at_sender=True)
 
 
@@ -112,15 +113,14 @@ class BLHX_BASE:
         bot:Bot
         ):
         div_list = await get_pve_recommendation()
-        div_text = ["认知觉醒推荐榜(主线)\n", "认知觉醒推荐榜(大世界)\n", "装备榜\n", "萌新入坑舰船推荐榜\n", "萌新初期装备榜\n",
-                    "兵装推荐榜\n", "专武推荐榜\n", "兑换装备推荐榜\n", "研发装备推荐榜\n", "改造推荐榜\n", "跨队舰船推荐榜\n",
-                    "氪金榜\n"]
+        # div_text = ["认知觉醒推荐榜(主线)\n", "认知觉醒推荐榜(大世界)\n", "装备榜\n", "萌新入坑舰船推荐榜\n", "萌新初期装备榜\n",
+        #             "兵装推荐榜\n", "专武推荐榜\n", "兑换装备推荐榜\n", "研发装备推荐榜\n", "改造推荐榜\n", "跨队舰船推荐榜\n",
+        #             "氪金榜\n" , "打捞主线榜\n","打捞作战榜'\n"]
         msg = "仅代表个人观点，完全不等于绝对客观，可能存在各种主观评判或者真爱加成，不过目标是努力去进行符合环境需求的客观评定\n"
         msg_list = []
         if len(div_list) != 0:
             for i in range(0, len(div_list)):
-                msg += (div_text[i] + MessageSegment.image(file=str(div_list[i].find('img')['src'])) + "\n")
-                print(str(div_list[i].find('img')['src']))
+                msg += Message(str(div_list[i].find('img')['alt']) + MessageSegment.image(file=str(div_list[i].find('img')['src'])) + "\n")
             msg_list.append(msg)
             forward_msg = render_forward_msg(msg_list)
             if isinstance(event,GroupMessageEvent):

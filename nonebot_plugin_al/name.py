@@ -1,8 +1,10 @@
 from pathlib import Path
 
+BOT_PATH = Path.cwd()
 DATA_PATH = Path().joinpath('data/al')
 PATH = str(DATA_PATH.joinpath('azurapi_data'))
 BACK_PATH = DATA_PATH.joinpath('azurapi_data_bak')
+DATA_PATH_STR = str(DATA_PATH)
 SAVE_PATH = DATA_PATH
 MAIN_URL = "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI"    ##https://raw.fastgit.org可以根据需要配置不同代理，结合网络情况自行修改
 SHIP_LIST = f"{MAIN_URL}/azurapi-js-setup/master/ships.json"
@@ -66,22 +68,19 @@ return: 返回整数，0表示成功，其他数字表示失败
 对于已经在名字系统里面存在的船只，不做任何处理；对于新加入的船，会进行添加。
 '''
 async def UpdateName():
-    PATH = str(DATA_PATH)
     ships = {}
 
     # 判断文件是否存在，不存在的话就不进行读取
     try:
-        async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
+        async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
             load_dict = await fp.read()
             ships = json.loads(load_dict)
-            ships = json.loads(ships)
     except:
         pass
 
-    async with aiofiles.open(PATH + '/azurapi_data/ships.json', 'r', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/ships.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
-        data = json.loads(data) # 别删除
 
     for item in data:
         if item['id'] in ships.keys():
@@ -89,7 +88,7 @@ async def UpdateName():
         ships[item['id']] = [item['names']['cn'], item['names']['jp'], item['names']['kr'], item['names']['en']]
 
     # print(ships)
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
         # json.dump(ships, fp, indent=2, ensure_ascii=False)
         await fp.write(json.dumps(ships, indent=2, ensure_ascii=False))
 
@@ -108,16 +107,15 @@ return: 返回整数，0表示成功，其他数字表示失败
 ERR_NAMEALREADYEXISTS = -1
 async def AddName(id: str, nickname: str):
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
-        data = json.loads(data)
 
     if nickname in data[str(id)]:
         return ERR_NAMEALREADYEXISTS
     data[id].append(nickname)
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
         await fp.write(json.dumps(data, indent=2, ensure_ascii=False))
 
     return 0
@@ -135,17 +133,16 @@ return: 返回整数，0表示成功，其他数字表示失败
 ERR_NICKNAMENOTFOUND = -1
 async def DelName(id: str, nickname: str):
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
-        data = json.loads(data)
 
     try:
         data[id].remove(nickname)
     except:
         return ERR_NICKNAMENOTFOUND
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'w', encoding='utf-8') as fp:
         await fp.write(json.dumps(data, indent=2, ensure_ascii=False))
 
     return 0
@@ -164,10 +161,9 @@ return:
 ERR_SHIPNOTFOUND = -1
 async def GetIDByNickname(nickname: str):
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
-        data = json.loads(data)
 
     # data = {}
     retvalue = {}
@@ -215,10 +211,9 @@ return:
 '''
 async def GetAllNickname(id: str):
 
-    async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
+    async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
-        data = json.loads(data)
 
     return data[id]
 

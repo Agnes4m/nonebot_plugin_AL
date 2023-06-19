@@ -1168,7 +1168,8 @@ async def get_ship_skin_by_id_with_index(id, index):
 
 
 def get_random_gallery():
-    files = [f for f in Path(DATA_PATH, 'ship_html', 'images', 'gallery').resolve().iterdir() if f.is_file()]
+    gallery_path = Path(DATA_PATH, 'ship_html', 'images', 'gallery').resolve()
+    files = [f.relative_to(gallery_path) for f in gallery_path.iterdir() if f.is_file()]
     rfile = random.choice(files)
     return str(rfile)
 

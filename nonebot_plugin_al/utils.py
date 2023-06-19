@@ -5,6 +5,7 @@ import json
 import aiofiles
 
 from pathlib import Path
+from nonebot.adapters.onebot.v11 import Bot
 
 SAVE_PATH = Path().joinpath('data/al')
 tool_path = SAVE_PATH.joinpath('wkhtmltopdf', 'bin', 'wkhtmltoimage.exe')
@@ -164,7 +165,12 @@ async def get_local_version():
         load_dict:dict = json.loads(load_dict) # 别删除，否则会有类型错误
     return load_dict['ships']
 
-def render_forward_msg(msg_list: list, uid=1916714922, name='小加加(VC装甲钢36D版)'):
+def render_forward_msg(msg_list: list, uid=1916714922, name='小加加(VC装甲钢36D版)',bot:Bot = None):
+    try:
+        uid = bot.self_id
+        name = list(bot.config.nickname)[0]
+    except:
+        pass
     forward_msg = []
     for msg in msg_list:
         forward_msg.append({

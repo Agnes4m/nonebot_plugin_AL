@@ -25,7 +25,7 @@ except:
 
 
 from .bili import jinghao,get_data, get_ship_msg
-from .send_message import *
+from .send_message import blhx
 
 
 __version__ = "0.3"

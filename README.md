@@ -39,7 +39,7 @@ __✨Nonebot & 碧蓝航线攻略✨__
 
 2、舰船装备图鉴
 
-3、(50%完成)移植大部分[blhx](https://github.com/Gaylone/blhx_wiki)（原hoshino改项目）的大部分功能
+3、(70%完成)移植大部分[blhx](https://github.com/Gaylone/blhx_wiki)（原hoshino改项目）的大部分功能
 
 
 ## 安装
@@ -58,7 +58,10 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 
 ## 资源包
 
-本项的图片资源基本都来源于本地，具体在项目的ship_html/images文件夹里，大小在2.7G左右，项目在[api](https://github.com/AzurAPI/azurapi-js-setup) 打包下载，将下载来的项目里的images文件夹放入本项目的ship_html里面，这点十分重要，blhx_wiki功能90%依赖这个资源包，请自行留意它的更新
+本项的图片资源基本都来源于本地，具体在项目的images文件夹里，大小在3.5G左右，项目在[api](https://github.com/AzurAPI/azurapi-js-setup) 打包下载，将下载来的项目里的images文件夹放入bot目录下`data/al/ship_html`里面，也就是说路径为`data/al/ship_html/images/`这点十分重要，blhx_wiki功能90%依赖这个资源包，请自行留意它的更新
+
+百度云盘：链接：https://pan.baidu.com/s/1ppLW3rkygLovXIG_Y58Qrg?pwd=57uk 
+提取码：57uk
 
 ## 指令
 
