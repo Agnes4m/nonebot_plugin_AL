@@ -28,7 +28,7 @@ from .bili import jinghao,get_data, get_ship_msg
 from .send_message import *
 
 
-__version__ = "0.2.0"
+__version__ = "0.3"
 __plugin_meta__ = PluginMetadata(
     name="碧蓝航线攻略",
     description='碧蓝航线井号榜等等攻略',

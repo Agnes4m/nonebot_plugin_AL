@@ -4,13 +4,15 @@ import random
 from random import choice
 import aiofiles
 from bs4 import BeautifulSoup
+from typing import Optional
+
 from .utils import *
-from bs4 import BeautifulSoup
+
 
 
 from .name import *
 
-async def get_data(url:str ,mode = None):
+async def get_data(url:str ,mode:Optional[str] = None):
     """获取网页内容"""
     headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
@@ -22,6 +24,8 @@ async def get_data(url:str ,mode = None):
                     html = await response.text()  # 获取网页源代码
                     soup = BeautifulSoup(html, 'html.parser')  # 创建BeautifulSoup对象
                     return soup
+                elif mode == "str":
+                    return await response.text()
                 else:
                     return await response.read()
             else:
@@ -1179,8 +1183,8 @@ def get_random_gallery():
 
 async def get_pve_recommendation():
     url = "https://wiki.biligame.com/blhx/%E4%BA%95%E5%8F%B7%E7%A2%A7%E8%93%9D%E6%A6%9C%E5%90%88%E9%9B%86"
-    response = await get_data(url)
-    soup = BeautifulSoup(response.text, "lxml")
+    response_text:str = await get_data(url,mode='text')
+    soup = BeautifulSoup(response_text, "lxml")
     div_list = soup.find_all(class_='floatnone')
     return div_list
 
@@ -1195,8 +1199,8 @@ async def get_pve_recommendation():
 
 async def get_ship_weapon_by_ship_name(name):
     url = "https://wiki.biligame.com/blhx/" + str(name)
-    response = await get_data(url)
-    soup = BeautifulSoup(response.text, "lxml")
+    response_text:str = await get_data(url,mode='text')
+    soup = BeautifulSoup(response_text, "lxml")
     div_list = soup.find(class_='row zb-table')
     target_soup = BeautifulSoup(
         open(DATA_PATH.joinpath('ship_html', 'ship_weapon_temp.html'),
@@ -1209,11 +1213,11 @@ async def get_ship_weapon_by_ship_name(name):
 
 async def force_update_offline():
     Path(SAVE_PATH, 'azurapi_data').mkdir(parents=True, exist_ok=True)
-    ship_list = await get_data(SHIP_LIST).json()
-    chapter_list = await get_data(CHAPTER_LIST).json()
-    equipment_list = await get_data(EQUIPMENT_LIST).json()
-    version_info = await get_data(VERSION_INFO).json()
-    memories_info = await get_data(MEMORIES_INFO).json()
+    ship_list = await get_data(SHIP_LIST,mode = 'str')
+    chapter_list = await get_data(CHAPTER_LIST,mode = 'str')
+    equipment_list = await get_data(EQUIPMENT_LIST,mode = 'str')
+    version_info = await get_data(VERSION_INFO,mode = 'str')
+    memories_info = await get_data(MEMORIES_INFO,mode = 'str')
 
     async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'ships.json'), 'wb') as f:
         await f.write(json.dumps(ship_list, ensure_ascii=False).encode())
@@ -1230,8 +1234,8 @@ async def force_update_offline():
 async def get_recent_event():
     base_url='https://wiki.biligame.com'
     url = "https://wiki.biligame.com/blhx/首页"
-    response = await get_data(url)
-    soup = BeautifulSoup(response.text, "lxml")
+    response_text:str = await get_data(url,mode='text')
+    soup = BeautifulSoup(response_text, "lxml")
     div_list=soup.find(class_='sy-left')
     if div_list.a['href'] is not None and str( div_list.a['href'])!='':
         return base_url+str(div_list.a['href'])

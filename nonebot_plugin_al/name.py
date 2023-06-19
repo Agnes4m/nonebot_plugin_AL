@@ -4,7 +4,7 @@ DATA_PATH = Path().joinpath('data/al')
 PATH = str(DATA_PATH.joinpath('azurapi_data'))
 BACK_PATH = DATA_PATH.joinpath('azurapi_data_bak')
 SAVE_PATH = DATA_PATH
-MAIN_URL = "https://raw.fastgit.org/AzurAPI"    ##https://raw.fastgit.org可以根据需要配置不同代理，结合网络情况自行修改
+MAIN_URL = "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI"    ##https://raw.fastgit.org可以根据需要配置不同代理，结合网络情况自行修改
 SHIP_LIST = f"{MAIN_URL}/azurapi-js-setup/master/ships.json"
 CHAPTER_LIST = f"{MAIN_URL}/azurapi-js-setup/master/chapters.json"
 EQUIPMENT_LIST = f"{MAIN_URL}/azurapi-js-setup/master/equipments.json"
@@ -41,7 +41,7 @@ id: [
 ],
 '''
 
-PATH = DATA_PATH
+
 
 
 '''
@@ -66,7 +66,7 @@ return: 返回整数，0表示成功，其他数字表示失败
 对于已经在名字系统里面存在的船只，不做任何处理；对于新加入的船，会进行添加。
 '''
 async def UpdateName():
-
+    PATH = str(DATA_PATH)
     ships = {}
 
     # 判断文件是否存在，不存在的话就不进行读取
@@ -74,12 +74,14 @@ async def UpdateName():
         async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
             load_dict = await fp.read()
             ships = json.loads(load_dict)
+            ships = json.loads(ships)
     except:
         pass
 
     async with aiofiles.open(PATH + '/azurapi_data/ships.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
+        data = json.loads(data) # 别删除
 
     for item in data:
         if item['id'] in ships.keys():
@@ -109,6 +111,7 @@ async def AddName(id: str, nickname: str):
     async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
+        data = json.loads(data)
 
     if nickname in data[str(id)]:
         return ERR_NAMEALREADYEXISTS
@@ -135,6 +138,7 @@ async def DelName(id: str, nickname: str):
     async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
+        data = json.loads(data)
 
     try:
         data[id].remove(nickname)
@@ -163,6 +167,7 @@ async def GetIDByNickname(nickname: str):
     async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
+        data = json.loads(data)
 
     # data = {}
     retvalue = {}
@@ -213,6 +218,7 @@ async def GetAllNickname(id: str):
     async with aiofiles.open(PATH + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
         load_dict = await fp.read()
         data = json.loads(load_dict)
+        data = json.loads(data)
 
     return data[id]
 

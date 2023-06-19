@@ -1,4 +1,3 @@
-import os
 import imgkit
 import cv2
 import pypinyin
@@ -7,8 +6,8 @@ import aiofiles
 
 from pathlib import Path
 
-SAVE_PATH = Path(__file__).joinpath('data/al')
-tool_path = os.path.abspath(os.path.join(SAVE_PATH, 'wkhtmltopdf', 'bin', 'wkhtmltoimage.exe'))
+SAVE_PATH = Path().joinpath('data/al')
+tool_path = SAVE_PATH.joinpath('wkhtmltopdf', 'bin', 'wkhtmltoimage.exe')
 """
 方法名：print_img
 参数列表：无
@@ -26,8 +25,8 @@ def print_img_ship():
         "enable-local-file-access": None
     }
     print("开始")
-    imgkit.from_file(os.path.abspath(os.path.join(SAVE_PATH, 'ship_html', 'ship_info.html')),
-                     os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_temp.png')),
+    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_info.html'),
+                     SAVE_PATH.joinpath('images', 'ship_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
     print("结束")
 
@@ -41,8 +40,8 @@ def print_img_ship_retrofit():
         "enable-local-file-access": None
     }
     print("开始")
-    imgkit.from_file(os.path.abspath(os.path.join(SAVE_PATH, 'ship_html', 'ship_retrofit.html')),
-                     os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_retrofit_temp.png')),
+    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_retrofit.html'),
+                     SAVE_PATH.joinpath('images', 'ship_retrofit_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
     print("结束")
 
@@ -50,11 +49,11 @@ def print_img_ship_retrofit():
 
 
 def img_process_ship_retrofit():
-    # os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_temp.png'))
-    img = cv2.imread(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_retrofit_temp.png')))
+    # SAVE_PATH.joinpath('images', 'ship_temp.png'))
+    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_retrofit_temp.png'))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_retrofit.png')), cropped)
+    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_retrofit.png'), cropped)
 
 """
 方法名：print_img_skin
@@ -71,9 +70,8 @@ def print_img_skin():
         "encoding": "UTF-8",
         "enable-local-file-access": None
     }
-    imgkit.from_file(os.path.abspath(os.path.join(SAVE_PATH, 'ship_html', 'ship_skin.html')),
-                     os.path.abspath(
-                         os.path.join(SAVE_PATH, 'images', 'ship_skin_mix', 'ship_skin.png')),
+    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_skin.html'),
+                     SAVE_PATH.joinpath('images', 'ship_skin_mix', 'ship_skin.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
 
 
@@ -84,9 +82,8 @@ def print_img_ship_weapon():
         "encoding": "UTF-8",
         "enable-local-file-access": None
     }
-    imgkit.from_file(os.path.abspath(os.path.join(SAVE_PATH, 'ship_html', 'ship_weapon.html')),
-                     os.path.abspath(
-                         os.path.join(SAVE_PATH, 'images', 'ship_weapon_temp.png')),
+    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_weapon.html'),
+                     SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
 
 
@@ -99,11 +96,11 @@ def print_img_ship_weapon():
 
 
 def img_process_ship_info():
-    # os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_temp.png'))
-    img = cv2.imread(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_temp.png')))
+    # SAVE_PATH.joinpath('images', 'ship_temp.png'))
+    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_temp.png'))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_info.png')), cropped)
+    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_info.png'), cropped)
 
     """
     方法名：img_process_ship_weapon
@@ -114,11 +111,11 @@ def img_process_ship_info():
 
 
 def img_process_ship_weapon():
-    # os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_weapon_temp.png'))
-    img = cv2.imread(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_weapon_temp.png')))
+    # SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'))
+    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(os.path.abspath(os.path.join(SAVE_PATH, 'images', 'ship_weapon.png')), cropped)
+    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_weapon.png'), cropped)
 
 
 def translate_ship_type(english):
@@ -160,10 +157,11 @@ def pinyin(word):
 
 
 async def get_local_version():
-    async with aiofiles.open(os.path.abspath(os.path.join(SAVE_PATH, 'azurapi_data', 'version-info.json')), 'r',
+    async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'version-info.json'), 'r',
               encoding='utf-8') as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict:dict = json.loads(load_dict)
+        load_dict:dict = json.loads(load_dict) # 别删除，否则会有类型错误
     return load_dict['ships']
 
 def render_forward_msg(msg_list: list, uid=1916714922, name='小加加(VC装甲钢36D版)'):
