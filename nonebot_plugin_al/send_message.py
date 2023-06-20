@@ -6,6 +6,7 @@ from nonebot.adapters.onebot.v11 import (Bot, GroupMessageEvent, Message,
 from nonebot.params import CommandArg
 from nonebot.matcher import Matcher
 from nonebot.log import logger
+from nonebot_plugin_htmlrender import html_to_pic
 
 from .api import *
 from .utils import *
@@ -23,7 +24,7 @@ class BLHX_BASE:
         bot:Bot,
         arg:Message = CommandArg()
         ):
-        SAVE_PATH = Path().cwd().joinpath('data/al')
+        SAVE_PATH = Path().cwd().joinpath('data/al/ship_html')
         try:
             args = arg.extract_plain_text().split()
             if len(args) == 2:
@@ -41,8 +42,9 @@ class BLHX_BASE:
                     msg = "她没有这个皮肤！"
                     await bot.send(event=event,message=msg, at_sender=True)
                 if flag == 0:
-                    print_img_skin()
-                    msg = MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_skin_mix/ship_skin.png")
+                    # print_img_skin()
+                    await save_img_ship('skin',temp=False)
+                    msg = MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_skin.png")))
                     await bot.send(event=event,message=msg, at_sender=True)
                 if flag == 1:
                     msg = "她只有原皮！"
@@ -57,19 +59,24 @@ class BLHX_BASE:
 
                 index = await format_data_into_html(await get_ship_data_by_id(ship_nickname_data['id']))
                 await get_ship_weapon_by_ship_name(ship_nickname_data['standred_name'])
-                print_img_ship()
-                print_img_ship_weapon()
+                
+                # print_img_ship()
+                # print_img_ship_weapon()
+
+                await save_img_ship()
+                await save_img_ship('weapon')
                 img_process_ship_info()
                 img_process_ship_weapon()
+                
                 if index == 0:
-                    msg = "舰船信息\n" + MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_info.png") \
-                        + "\n推荐出装\n" + MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_weapon.png")+ "\n此船备注昵称有：\n"+nickname_list
+                    msg = "舰船信息\n" + MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_info.png"))) \
+                        + "\n推荐出装\n" + MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_weapon.png")))+ "\n此船备注昵称有：\n"+nickname_list
                 else:
                     print_img_ship_retrofit()
                     img_process_ship_retrofit()
-                    msg = "舰船信息\n" + MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_info.png") \
-                        + "\n此船可改\n" + MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_retrofit.png") \
-                        + "\n推荐出装\n" + MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_weapon.png")\
+                    msg = "舰船信息\n" + MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_info.png"))) \
+                        + "\n此船可改\n" + MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_retrofit.png"))) \
+                        + "\n推荐出装\n" + MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_weapon.png")))\
                         + "\n此船备注昵称有：\n"+nickname_list
 
                 msg_list = []
@@ -82,14 +89,14 @@ class BLHX_BASE:
                 await bot.send(event=event,message='请在命令之后提供精确舰船名称和皮肤昵称哦~', at_sender=True)
         except Exception as e:
             traceback.print_exc()
-            await bot.send(event=event,message="查询出错", at_sender=True)
+            await bot.send(event=event,message=f"查询出错,{e}", at_sender=True)
 
     async def send_random_gallery(
         matcher:Matcher,
         event:Event,
         bot:Bot
         ):
-        SAVE_PATH = Path().cwd().joinpath('data/al/ship_html/images/gallery/' / get_random_gallery())
+        SAVE_PATH = Path().cwd().joinpath('data/al/ship_html/images/gallery/',get_random_gallery())
         msg = MessageSegment.image("file:///" + str(SAVE_PATH))
         await bot.send(event=event,message=msg, at_sender=True)
 
@@ -261,7 +268,7 @@ class BLHX_BASE:
                     return
                 if flag == 0:
                     print_img_skin()
-                    msg = MessageSegment.image("file:///" + SAVE_PATH + "/images/ship_skin_mix/ship_skin.png")
+                    msg = MessageSegment.image("file:///" + str(SAVE_PATH.joinpath("images/ship_skin.png")))
                     await bot.send(event=event,message=msg, at_sender=True)
                     return
         except:
@@ -278,7 +285,7 @@ class BLHX_BASE:
         arg:Message = CommandArg()
         ):
         try:
-            args = arg.message.extract_plain_text().split()
+            args = arg.extract_plain_text().split()
             if len(args) == 1:
                 if str(args[0]) == '轻型':
                     data = await gacha_light_10()

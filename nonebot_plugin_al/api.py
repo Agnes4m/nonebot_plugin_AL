@@ -39,7 +39,7 @@ async def get_ship_id_by_name(name):
     async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
                              )as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
         id = None
 
         for result in load_dict:
@@ -62,7 +62,7 @@ async def get_ship_data_by_name(name):
     async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
                              )as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
     for result in load_dict:
         if str(result['names']['cn']) == str(name):
             return result
@@ -82,7 +82,7 @@ async def get_ship_data_by_id(id):
     async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
                              )as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
     for result in load_dict:
         if str(result['id']) == str(id):
             return result
@@ -101,11 +101,12 @@ async def format_data_into_html(data):
     # 读入html备用
     soup = BeautifulSoup(open(DATA_PATH.joinpath('ship_html', 'ship_temp.html'), encoding='UTF-8'), "lxml")
     # 读入bwiki数据
-
+    with open('test.json','w') as f:
+        json.dump(data,f, ensure_ascii=True,indent=4)
     async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ships_plus.json'),mode='r',encoding='utf-8'
                             )as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
     data_plus = {}
     try:
         for i in range(0, len(load_dict)):
@@ -776,9 +777,10 @@ async def format_data_into_html(data):
     oil = ""
     medal = ""
     if scrapValues is not None:
+        # 退役不再返油
         coin = str(data['scrapValue']['coin'])
         soup.find(id='coin').string = coin
-        oil = str(data['scrapValue']['oil'])
+        # oil = str(data['scrapValue']['oil'])
         soup.find(id='oil').string = oil
         medal = str(data['scrapValue']['medal'])
         soup.find(id='medal').string = medal
@@ -1033,12 +1035,22 @@ async def get_ship_skin_by_id(id, skin_name):
     chibi_path = ''
     # 处理原皮
     if skin_name == '原皮':
+        # image_path = str(ship_skin_list[0]['image']).replace(
+        #     "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "data/al/ship_html/")
+        # background_path = str(ship_skin_list[0]['background']).replace(
+        #     "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "data/al/ship_html/")
+        # chibi_path = str(ship_skin_list[0]['chibi']).replace(
+        #     "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "data/al/ship_html/")
+        # 在线
         image_path = str(ship_skin_list[0]['image']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "")
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         background_path = str(ship_skin_list[0]['background']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "")
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         chibi_path = str(ship_skin_list[0]['chibi']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "")
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
 
         soup.find(id='img-content')['style'] = "background-image: url('" + background_path + "')"
         soup.find(id='img-content').string = ''
@@ -1199,14 +1211,15 @@ async def get_pve_recommendation():
 
 
 async def get_ship_weapon_by_ship_name(name):
-    url = "https://wiki.biligame.com/blhx/" + str(name)
-    response_text:str = await get_data(url,mode='text')
-    soup = BeautifulSoup(response_text, "lxml")
-    div_list = soup.find(class_='row zb-table')
+    # 这里不知道怎么改，先注释问原作者
+    # url = "https://wiki.biligame.com/blhx/" + str(name)
+    # response_text:str = await get_data(url,mode='text')
+    # soup = BeautifulSoup(response_text, "lxml")
+    # div_list = soup.find(class_='row zb-table')
     target_soup = BeautifulSoup(
         open(DATA_PATH.joinpath('ship_html', 'ship_weapon_temp.html'),
              encoding='UTF-8'), "lxml")
-    target_soup.find('body').append(div_list)
+    # target_soup.find('body').append(div_list)
     async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_weapon.html'),
               'w', encoding="utf-8") as fp:
         await fp.write(str(target_soup.prettify()))
@@ -1237,7 +1250,7 @@ async def get_recent_event():
     url = "https://wiki.biligame.com/blhx/首页"
     response_text:str = await get_data(url,mode='text')
     soup = BeautifulSoup(response_text, "lxml")
-    div_list=soup.find(class_='sy-left')
+    div_list=soup.find(class_='wikitable eventCalendar noselect')
     if div_list.a['href'] is not None and str( div_list.a['href'])!='':
         return base_url+str(div_list.a['href'])
     else:
@@ -1250,7 +1263,7 @@ async def gacha_heavy_10():
                              'r',
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
         for i in range(0,10):
             flag = random.randint(0,999)
             if flag < 70:
@@ -1275,7 +1288,7 @@ async def gacha_special_10():
                              'r',
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
         for i in range(0,10):
             flag = random.randint(0,999)
             if flag < 70:
@@ -1300,7 +1313,7 @@ async def gacha_light_10():
                              'r',
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
-        load_dict = json.loads(load_dict)
+        load_dict = await str_to_json(load_dict)
         for i in range(0,10):
             flag = random.randint(0,999)
             if flag < 70:

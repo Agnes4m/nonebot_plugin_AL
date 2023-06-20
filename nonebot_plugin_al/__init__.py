@@ -133,59 +133,59 @@ on_command(
 )
 
 on_command(
-    "blhx过场", 
+    "blhx 过场", 
     block=True, 
     priority=10,
     handlers=[blhx.send_random_gallery]
 )
 
 on_command(
-    "blhx帮助", 
+    "blhx 帮助", 
     block=True, 
     priority=10,
     handlers=[blhx.send_blhx_help]
 )
 on_command(
-    "blhx强度榜", 
+    "blhx 强度榜", 
     block=True, 
     priority=10,
     handlers=[blhx.send_pve_recommendation]
 )
 on_command(
-    "blhx强制更新", 
+    "blhx 强制更新", 
     block=True, 
     priority=10,
     permission=SUPERUSER,
     handlers=[blhx.force_update]
 )
 on_command(
-    "blhx最新活动", 
+    "blhx 最新活动", 
     block=True, 
     priority=10,
     handlers=[blhx.get_recently_event]
 )
 on_command(
-    "blhx备注", 
+    "blhx 备注", 
     block=True, 
     priority=10,
     permission=ADMIN,
     handlers=[blhx.set_nickname]
 )
 on_command(
-    "blhx移除备注", 
+    "blhx 移除备注", 
     block=True, 
     priority=10,
     permission=ADMIN,
     handlers=[blhx.remove_nickname]
 )
 on_command(
-    "blhx皮肤", 
+    "blhx 皮肤", 
     block=True, 
     priority=10,
     handlers=[blhx.quick_search_skin]
 )
 on_command(
-    "blhx大建", 
+    "blhx 大建", 
     block=True, 
     priority=10,
     handlers=[blhx.building]

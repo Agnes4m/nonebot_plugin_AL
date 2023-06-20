@@ -4,8 +4,10 @@ import pypinyin
 import json
 import aiofiles
 
+from typing import Optional
 from pathlib import Path
 from nonebot.adapters.onebot.v11 import Bot
+from nonebot_plugin_htmlrender import html_to_pic
 
 SAVE_PATH = Path().joinpath('data/al')
 tool_path = SAVE_PATH.joinpath('wkhtmltopdf', 'bin', 'wkhtmltoimage.exe')
@@ -16,7 +18,21 @@ tool_path = SAVE_PATH.joinpath('wkhtmltopdf', 'bin', 'wkhtmltoimage.exe')
 返回值：无返回值，从html文件夹里读取html文件，打印的图片输出到images文件夹
 """
 
-
+async def save_img_ship(tag:Optional[str] = None,temp:bool = True):
+    tep = '_temp' if temp else ''
+    if not tag:
+        with open(SAVE_PATH.joinpath('ship_html', 'ship_info.html'),'r',encoding='utf-8')as f:
+            html = f.read()
+        pic = await html_to_pic(html=html)
+        with open(SAVE_PATH.joinpath('ship_html','images', 'ship_temp.png'),'wb')as f:
+            f.write(pic)
+    else:
+        with open(SAVE_PATH.joinpath('ship_html', f'ship_{tag}.html'),'r',encoding='utf-8')as f:
+            html = f.read()
+        pic = await html_to_pic(html=html)
+        with open(SAVE_PATH.joinpath('ship_html','images', f'ship_{tag}{tep}.png'),'wb')as f:
+            f.write(pic)
+            
 def print_img_ship():
     # path_wkimg = SAVE_PATH + '/\\wkhtmltopdf/\\bin/\\wkhtmltoimage.exe'  # 工具路径
     path_wkimg = tool_path
@@ -30,7 +46,6 @@ def print_img_ship():
                      SAVE_PATH.joinpath('images', 'ship_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
     print("结束")
-
 
 def print_img_ship_retrofit():
     # path_wkimg = SAVE_PATH + '/\\wkhtmltopdf/\\bin/\\wkhtmltoimage.exe'  # 工具路径
@@ -51,10 +66,10 @@ def print_img_ship_retrofit():
 
 def img_process_ship_retrofit():
     # SAVE_PATH.joinpath('images', 'ship_temp.png'))
-    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_retrofit_temp.png'))
+    img = cv2.imread(SAVE_PATH.joinpath('ship_html','images', 'ship_retrofit_temp.png'))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_retrofit.png'), cropped)
+    cv2.imwrite(SAVE_PATH.joinpath('ship_html','images', 'ship_retrofit.png'), cropped)
 
 """
 方法名：print_img_skin
@@ -72,7 +87,7 @@ def print_img_skin():
         "enable-local-file-access": None
     }
     imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_skin.html'),
-                     SAVE_PATH.joinpath('images', 'ship_skin_mix', 'ship_skin.png'),
+                     SAVE_PATH.joinpath('ship_html', 'images','ship_skin.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
 
 
@@ -84,8 +99,9 @@ def print_img_ship_weapon():
         "enable-local-file-access": None
     }
     imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_weapon.html'),
-                     SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'),
+                     SAVE_PATH.joinpath('ship_html', 'images', 'ship_weapon_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
+
 
 
 """
@@ -98,10 +114,10 @@ def print_img_ship_weapon():
 
 def img_process_ship_info():
     # SAVE_PATH.joinpath('images', 'ship_temp.png'))
-    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_temp.png'))
+    img = cv2.imread(str(SAVE_PATH.joinpath('ship_html','images', 'ship_temp.png')))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_info.png'), cropped)
+    cv2.imwrite(str(SAVE_PATH.joinpath('ship_html','images', 'ship_info.png')), cropped)
 
     """
     方法名：img_process_ship_weapon
@@ -113,10 +129,10 @@ def img_process_ship_info():
 
 def img_process_ship_weapon():
     # SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'))
-    img = cv2.imread(SAVE_PATH.joinpath('images', 'ship_weapon_temp.png'))
+    img = cv2.imread(str(SAVE_PATH.joinpath('ship_html','images', 'ship_weapon_temp.png')))
     image = img.shape
     cropped = img[0:image[0], 0:620]  # 裁剪坐标为[y0:y1, x0:x1]
-    cv2.imwrite(SAVE_PATH.joinpath('images', 'ship_weapon.png'), cropped)
+    cv2.imwrite(str(SAVE_PATH.joinpath('ship_html','images', 'ship_weapon.png')), cropped)
 
 
 def translate_ship_type(english):

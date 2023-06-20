@@ -72,7 +72,7 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 - 2、碧蓝角色【角色名称】
 - 3、碧蓝装备【装备名称】
 
-### 【blhx_wiki】（除了查船，其他不用空格）
+### 【blhx_wiki】（强制检查空格）
 
 0.帮助信息
 

@@ -27,8 +27,12 @@ PATH_BG_GACHA = DATA_PATH.joinpath('gacha_data', 'level_background')        # �
 
 import aiofiles
 import difflib
-import json
-import os
+
+try:
+    import ujson as json
+except:
+    import json
+
 
 '''
 这个模块定义了名字系统及其对应的操作方法。引入的库都是py的标准库，无需额外安装
@@ -73,14 +77,15 @@ async def UpdateName():
     # 判断文件是否存在，不存在的话就不进行读取
     try:
         async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
-            load_dict = await fp.read()
-            ships = json.loads(load_dict)
+            load_dict = str(await fp.read())
+            ships = await str_to_json(load_dict)
     except:
         pass
 
     async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/ships.json', 'r', encoding='utf-8') as fp:
-        load_dict = await fp.read()
-        data = json.loads(load_dict)
+        load_dict = str(await fp.read())
+        data = await str_to_json(load_dict)
+        print(f'data的类型是{type(data)}')
 
     for item in data:
         if item['id'] in ships.keys():
@@ -108,8 +113,8 @@ ERR_NAMEALREADYEXISTS = -1
 async def AddName(id: str, nickname: str):
 
     async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
-        load_dict = await fp.read()
-        data = json.loads(load_dict)
+        load_dict = str(await fp.read())
+        data = await str_to_json(load_dict)
 
     if nickname in data[str(id)]:
         return ERR_NAMEALREADYEXISTS
@@ -134,8 +139,8 @@ ERR_NICKNAMENOTFOUND = -1
 async def DelName(id: str, nickname: str):
 
     async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
-        load_dict = await fp.read()
-        data = json.loads(load_dict)
+        load_dict = str(await fp.read())
+        data = await str_to_json(load_dict)
 
     try:
         data[id].remove(nickname)
@@ -162,8 +167,8 @@ ERR_SHIPNOTFOUND = -1
 async def GetIDByNickname(nickname: str):
 
     async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
-        load_dict = await fp.read()
-        data = json.loads(load_dict)
+        load_dict = str(await fp.read())
+        data = await str_to_json(load_dict)
 
     # data = {}
     retvalue = {}
@@ -212,9 +217,12 @@ return:
 async def GetAllNickname(id: str):
 
     async with aiofiles.open(DATA_PATH_STR + '/azurapi_data/names.json', 'r', encoding='utf-8') as fp:
-        load_dict = await fp.read()
-        data = json.loads(load_dict)
+        load_dict = str(await fp.read())
+        data = await str_to_json(load_dict)
 
     return data[id]
 
-
+async def str_to_json(data:str):
+    while isinstance(data,str):
+        data = json.loads(data)
+    return data
