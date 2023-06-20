@@ -6,8 +6,10 @@ import aiofiles
 
 from typing import Optional
 from pathlib import Path
+from nonebot import get_bot
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot_plugin_htmlrender import html_to_pic
+from nonebot.log import logger
 
 SAVE_PATH = Path().joinpath('data/al')
 tool_path = SAVE_PATH.joinpath('wkhtmltopdf', 'bin', 'wkhtmltoimage.exe')
@@ -183,10 +185,10 @@ async def get_local_version():
 
 def render_forward_msg(msg_list: list, uid=1916714922, name='小加加(VC装甲钢36D版)',bot:Bot = None):
     try:
-        uid = bot.self_id
-        name = list(bot.config.nickname)[0]
-    except:
-        pass
+        uid = get_bot().self_id
+        name = list(get_bot().config.nickname)[0]
+    except Exception as e:
+        logger.warning(f'获取bot信息错误\n{e}')
     forward_msg = []
     for msg in msg_list:
         forward_msg.append({

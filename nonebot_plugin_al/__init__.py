@@ -11,11 +11,6 @@ from nonebot.adapters.onebot.v11 import (
     Event,
     GroupMessageEvent,
 )
-from nonebot.adapters.onebot.v11.permission import (
-    GROUP_ADMIN,
-    GROUP_OWNER,
-    PRIVATE_FRIEND,
-)
 import traceback
 from pathlib import Path
 try:
@@ -26,6 +21,7 @@ except:
 
 from .bili import jinghao,get_data, get_ship_msg
 from .send_message import blhx
+from .config import ADMIN
 
 
 __version__ = "0.3"
@@ -76,7 +72,6 @@ __plugin_meta__ = PluginMetadata(
     },
 )
 
-ADMIN = SUPERUSER | GROUP_ADMIN | GROUP_OWNER 
 al_command = on_command('al',aliases={'碧蓝'},priority=50,block=True)
 tag_ser = on_command('alhelp',aliases={'碧蓝指令','碧蓝帮助'},priority=30,block=False)
 tags = ['强度榜','装备榜','金部件榜','萌新榜','兵器榜','专武榜',
