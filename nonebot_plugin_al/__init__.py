@@ -23,12 +23,7 @@ from .bili import jinghao,get_data, get_ship_msg
 from .send_message import blhx
 from .config import ADMIN
 
-
-__version__ = "0.3"
-__plugin_meta__ = PluginMetadata(
-    name="碧蓝航线攻略",
-    description='碧蓝航线井号榜等等攻略',
-    usage="""
+logo ="""
     ......                  ` .]]@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OO^       
     ......                ,/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OO^       
     ......            /O@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OO^       
@@ -62,7 +57,13 @@ __plugin_meta__ = PluginMetadata(
     @OO\ooO....,*/@^,@@@\..@^[\@@@@@@O]*]//[`@^*^*=OOOOOO^..=OO\...\^.\@
     OOooo^..`./oOO@/ =^\/^.^\\....=]......,/@@^O^*O.... .,][],OO\....\`.
     @Oooo\/]OOOOOO/  .  \.=^....,..........[.,OO^=^.    /    ,`\OO`.....
-    """,
+    """
+
+__version__ = "0.3"
+__plugin_meta__ = PluginMetadata(
+    name="碧蓝航线攻略",
+    description='碧蓝航线井号榜等等攻略',
+    usage=logo,
     type="application",
     homepage="https://github.com/Agnes4m/nonebot_plugin_AL",
     supported_adapters={"~onebot.v11"},
