@@ -126,6 +126,13 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 
 命令示范：blhx大建 轻型/重型/特型
 
+## 🙈 其他
+
+- 本项目仅供学习使用，请勿用于商业用途
+- 喜欢该项目可以Star或者提供PR，你的支持就是我持续维护的动力
+- [爱发电](https://afdian.net/a/agnes_digital)
+- [MIT License](https://github.com/Agnes4m/nonebot_plugin_AL/blob/main/LICENSE) ©[@Agnes4m](https://github.com/Agnes4m)
+
 ## 感谢
 
 - [AzurAPI](https://github.com/AzurAPI/azurapi-js-setup)持续更新的碧蓝航线数据库

@@ -35,19 +35,6 @@ async def save_img_ship(tag:Optional[str] = None,temp:bool = True):
         with open(SAVE_PATH.joinpath('ship_html','images', f'ship_{tag}{tep}.png'),'wb')as f:
             f.write(pic)
             
-def print_img_ship():
-    # path_wkimg = SAVE_PATH + '/\\wkhtmltopdf/\\bin/\\wkhtmltoimage.exe'  # 工具路径
-    path_wkimg = tool_path
-    cfg = imgkit.config(wkhtmltoimage=path_wkimg)
-    options = {
-        "encoding": "UTF-8",
-        "enable-local-file-access": None
-    }
-    print("开始")
-    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_info.html'),
-                     SAVE_PATH.joinpath('images', 'ship_temp.png'),
-                     options=options, config=cfg)  # 不管怎么样都打印这张图片
-    print("结束")
 
 def print_img_ship_retrofit():
     # path_wkimg = SAVE_PATH + '/\\wkhtmltopdf/\\bin/\\wkhtmltoimage.exe'  # 工具路径
@@ -62,7 +49,6 @@ def print_img_ship_retrofit():
                      SAVE_PATH.joinpath('images', 'ship_retrofit_temp.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
     print("结束")
-
 
 
 
@@ -91,19 +77,6 @@ def print_img_skin():
     imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_skin.html'),
                      SAVE_PATH.joinpath('ship_html', 'images','ship_skin.png'),
                      options=options, config=cfg)  # 不管怎么样都打印这张图片
-
-
-def print_img_ship_weapon():
-    path_wkimg = tool_path  # 工具路径
-    cfg = imgkit.config(wkhtmltoimage=path_wkimg)
-    options = {
-        "encoding": "UTF-8",
-        "enable-local-file-access": None
-    }
-    imgkit.from_file(SAVE_PATH.joinpath('ship_html', 'ship_weapon.html'),
-                     SAVE_PATH.joinpath('ship_html', 'images', 'ship_weapon_temp.png'),
-                     options=options, config=cfg)  # 不管怎么样都打印这张图片
-
 
 
 """
@@ -185,8 +158,8 @@ async def get_local_version():
 
 def render_forward_msg(msg_list: list, uid=1916714922, name='小加加(VC装甲钢36D版)',bot:Bot = None):
     try:
-        uid = get_bot().self_id
-        name = list(get_bot().config.nickname)[0]
+        uid = bot.self_id
+        name = list(bot.config.nickname)[0]
     except Exception as e:
         logger.warning(f'获取bot信息错误\n{e}')
     forward_msg = []
