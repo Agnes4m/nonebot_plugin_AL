@@ -49,6 +49,8 @@ class AzurConfigManager:
         return list(self.config.dict(by_alias=True).keys())
 
     def save(self):
+        if not os.path.exists("./data/al/"):
+            os.makedirs("./data/al/")
         with self.file_path.open('w', encoding='utf-8') as f:
             yaml.dump(
                 self.config.dict(by_alias=True),
