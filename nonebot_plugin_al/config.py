@@ -11,7 +11,7 @@ from nonebot.adapters.onebot.v11.permission import (
 )
 
 CONFIG_PATH = Path().joinpath('data/al/config.yml')
-
+CONFIG_PATH.parent.mkdir(parents=True,exist_ok=True)
 driver = get_driver()
 COMMAND_START = list[driver.config.command_start]
 try:

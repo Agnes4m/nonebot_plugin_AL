@@ -6,7 +6,6 @@ import aiofiles
 
 from typing import Optional
 from pathlib import Path
-from nonebot import get_bot
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot_plugin_htmlrender import html_to_pic
 from nonebot.log import logger

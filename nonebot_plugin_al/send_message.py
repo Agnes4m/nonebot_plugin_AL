@@ -148,7 +148,7 @@ class BLHX_BASE:
         try:
             await bot.send(event=event,message='正在更新，首先请确保网络能访问github的文件中心，否则容易出现翻车风险！', at_sender=True)
             await force_update_offline()
-            os.rename(PATH, BACK_PATH)  # 备份源文件省得出意外翻车
+            Path(PATH).rename(BACK_PATH)  # 备份源文件省得出意外翻车
             await force_update_offline()  # 再更新
             shutil.rmtree(BACK_PATH)  # 更新完成再删除备份
             version_info = await get_local_version()
@@ -160,7 +160,7 @@ class BLHX_BASE:
             traceback.print_exc()
             await bot.send(event=event,message='更新失败！尝试回滚...', at_sender=True)
             try:
-                os.rename(BACK_PATH, PATH)
+                Path(BACK_PATH).rename(PATH)
                 await bot.send(event=event,message='回滚成功，差点您就没了。', at_sender=True)
             except:
                 await bot.send(event=event,message=f'回滚失败！', at_sender=True)

@@ -1,6 +1,5 @@
 
 from PIL import Image, ImageDraw, ImageFont
-import os
 from .api import get_ship_data_by_id
 import asyncio
 
