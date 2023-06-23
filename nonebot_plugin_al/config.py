@@ -17,7 +17,7 @@ COMMAND_START = list[driver.config.command_start]
 try:
     NICKNAME: str = list(driver.config.nickname)[0]
 except Exception:
-    NICKNAME = 'bot'
+    NICKNAME = '小加加(VC装甲钢36D版)'
 
 
 ADMIN = SUPERUSER | GROUP_ADMIN | GROUP_OWNER 

@@ -1,3 +1,5 @@
+from nonebot import require
+require('nonebot_plugin_htmlrender')
 
 from nonebot import on_command
 from nonebot.permission import SUPERUSER
@@ -7,11 +9,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import (
     Message,
     MessageSegment,
-    Bot,
-    Event,
-    GroupMessageEvent,
 )
-import traceback
 from pathlib import Path
 try:
     import ujson as json
