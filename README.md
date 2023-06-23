@@ -60,6 +60,8 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 
 本项的图片资源基本都来源于本地，具体在项目的images文件夹里，大小在3.5G左右，项目在[api](https://github.com/AzurAPI/azurapi-js-setup) 打包下载，将下载来的项目里的images文件夹放入bot目录下`data/al/ship_html`里面，也就是说路径为`data/al/ship_html/images/`这点十分重要，blhx_wiki功能90%依赖这个资源包，请自行留意它的更新
 
+<!-- 除了图片文件，还有一些其它的，比如原作者仓库的 一些(划掉) 好多东西 -->
+
 百度云盘：链接：https://pan.baidu.com/s/1ppLW3rkygLovXIG_Y58Qrg?pwd=57uk 
 提取码：57uk
 
