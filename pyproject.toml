@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_al"
-version = "0.3.6"
+version = "0.3.7"
 description = "Azuer L plugin for NoneBot2"
 authors = ["Agnes_Digital <Z735803792@163.com>"]
 license = "MIT"
@@ -14,6 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Operating System :: OS Independent",
 ]
 include = [

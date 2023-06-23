@@ -3,12 +3,10 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 import time
 
-from nonebot import require
 from nonebot.log import logger
 from nonebot_plugin_htmlrender import (
     html_to_pic,
 )
-require("nonebot_plugin_htmlrender")
 
 
 from .api import get_data
