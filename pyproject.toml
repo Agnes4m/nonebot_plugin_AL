@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_al"
-version = "0.3.9"
+version = "0.3.10"
 description = "Azuer L plugin for NoneBot2"
 authors = ["Agnes_Digital <Z735803792@163.com>"]
 license = "MIT"

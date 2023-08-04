@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD026 MD031 MD033 MD036 MD041 MD046 -->
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/Agnes4m/nonebot_plugin_l4d2_server/main/image/logo.png" width="180" height="180"  alt="AgnesDigitalLogo">
@@ -56,7 +57,13 @@ pip install nonebot_plugin_al
 git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 ```
 
+## 配置
+
+配置文件路径：`data/al/config.yml`
+
 ## 资源包
+
+### azurapi
 
 本项的图片资源基本都来源于本地，具体在项目的images文件夹里，大小在3.5G左右，项目在[api](https://github.com/AzurAPI/azurapi-js-setup) 打包下载，将下载来的项目里的images文件夹放入bot目录下`data/al/ship_html`里面，也就是说路径为`data/al/ship_html/images/`这点十分重要，blhx_wiki功能90%依赖这个资源包，请自行留意它的更新
 
@@ -64,6 +71,10 @@ git clone https://github.com/Agnes4m/nonebot_plugin_AL.git
 
 百度云盘：链接：https://pan.baidu.com/s/1ppLW3rkygLovXIG_Y58Qrg?pwd=57uk 
 提取码：57uk
+
+### blhx_wiki
+
+仓库在[这里](https://github.com/Gaylone/blhx_wiki),包括了blhx指令相关的大部分文件
 
 ## 指令
 
