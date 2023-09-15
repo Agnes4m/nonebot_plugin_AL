@@ -4,11 +4,10 @@ import pypinyin
 import json
 import aiofiles
 
-from typing import Optional, Tuple, List
+from typing import Optional
 from pathlib import Path
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot_plugin_htmlrender import html_to_pic
-from nonebot.log import logger
 
 from .config import NICKNAME
 
@@ -67,15 +66,14 @@ def img_process_ship_retrofit():
     cv2.imwrite(SAVE_PATH.joinpath("ship_html", "images", "ship_retrofit.png"), cropped)
 
 
-"""
-方法名：print_img_skin
-参数列表：无
-用处：调用打印工具，打印ship_skin.html成图片
-返回值：无返回值，从html文件夹里读取html文件，打印的图片输出到images文件夹
-"""
-
-
 def print_img_skin():
+    """
+    print_img_skin
+
+    参数列表：无
+    用处：调用打印工具，打印ship_skin.html成图片
+    返回值：无返回值，从html文件夹里读取html文件，打印的图片输出到images文件夹
+    """
     path_wkimg = tool_path  # 工具路径
     cfg = imgkit.config(wkhtmltoimage=path_wkimg)
     options = {"encoding": "UTF-8", "enable-local-file-access": None}
@@ -87,15 +85,14 @@ def print_img_skin():
     )  # 不管怎么样都打印这张图片
 
 
-"""
-方法名：img_process_ship_info
-参数列表：无
-用处：裁剪图片
-返回值：无返回值
-"""
-
-
 def img_process_ship_info():
+    """
+    img_process_ship_info
+
+    参数列表：无
+    用处：裁剪图片
+    返回值：无返回值
+    """
     # SAVE_PATH.joinpath('images', 'ship_temp.png'))
     img = cv2.imread(str(SAVE_PATH.joinpath("ship_html", "images", "ship_temp.png")))
     image = img.shape

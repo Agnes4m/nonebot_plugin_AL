@@ -18,7 +18,6 @@ try:
 except:
     import json
 
-
 from .bili import jinghao, get_data, get_ship_msg
 from .send_message import blhx
 from .config import ADMIN
