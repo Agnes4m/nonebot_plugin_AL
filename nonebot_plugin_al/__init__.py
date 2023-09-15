@@ -18,10 +18,10 @@ try:
 except:
     import json
 
-
 from .bili import jinghao, get_data, get_ship_msg
 from .send_message import blhx
 from .config import ADMIN
+from .api import get_server_status
 
 logo = """
     ......                  ` .]]@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OO^       
@@ -103,6 +103,7 @@ async def _(matcher: Matcher):
     ----------
     碧蓝角色【角色名称】
     碧蓝装备【名称】
+    碧蓝服务器【区服】(可选, 如官服)【具体服务器】(可选, 如北极光计划)
     """
     await matcher.finish(msg)
 
@@ -136,6 +137,20 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
             if any(word in sublist for sublist in value):
                 await matcher.finish(MessageSegment.image(await get_ship_msg(key)))
         await matcher.finish("没有这个装备~")
+    elif word.startswith("服务器"):
+        result = await get_server_status(*args)
+        if isinstance(result, tuple):
+            msg = Message(f"服务器状态：{result[0]}: {result[1]}")
+        elif isinstance(result, list):
+            msg = Message("服务器状态")
+            for state in result:
+                msg += Message(f"\n{state[0]}: {state[1]}")
+        elif result == 0:
+            msg = "参数错误，命令需形如: blhx服务器 [区服] [具体服务器]"
+        else:
+            msg = "服务器状态获取失败"
+
+        await matcher.send(msg)
     else:
         await matcher.finish()
 

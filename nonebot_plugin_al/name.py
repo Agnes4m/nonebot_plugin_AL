@@ -1,3 +1,16 @@
+"""
+这个模块定义了名字系统及其对应的操作方法。引入的库都是py的标准库，无需额外安装
+id: [
+    cn_name,
+    jp_name,
+    kr_name,
+    en_name,
+    nickname1,
+    nickname2,
+    ...
+],
+"""
+
 from pathlib import Path
 import aiofiles
 import difflib
@@ -37,46 +50,30 @@ except ImportError:
     import json
 
 
-"""
-这个模块定义了名字系统及其对应的操作方法。引入的库都是py的标准库，无需额外安装
-id: [
-    cn_name,
-    jp_name,
-    kr_name,
-    en_name,
-    nickname1,
-    nickname2,
-    ...
-],
-"""
-
-
-"""
-function: StringSimilar
-args: 
-    str1, str2: str 比较的两个字符串
-return:
-    返回一个数字，表示两个字符串的相似程度
-
-检查两个字符串的相似程度
-"""
-
-
 def StringSimilar(str1: str, str2: str):
+    """
+    StringSimilar
+
+    args:
+        str1, str2: str 比较的两个字符串
+    return:
+        返回一个数字，表示两个字符串的相似程度
+
+    检查两个字符串的相似程度
+    """
     return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
 
 
-"""
-function: UpdateName
-args: null
-return: 返回整数，0表示成功，其他数字表示失败
-
-初始化名称文件，在执行脚本更新之后应该执行一次这个方法。
-对于已经在名字系统里面存在的船只，不做任何处理；对于新加入的船，会进行添加。
-"""
-
-
 async def UpdateName():
+    """
+    UpdateName
+
+    args: null
+    return: 返回整数，0表示成功，其他数字表示失败
+
+    初始化名称文件，在执行脚本更新之后应该执行一次这个方法。
+    对于已经在名字系统里面存在的船只，不做任何处理；对于新加入的船，会进行添加。
+    """
     ships = {}
 
     # 判断文件是否存在，不存在的话就不进行读取
@@ -116,19 +113,20 @@ async def UpdateName():
     return 0
 
 
-"""
-function: AddName
-args: 
-    id: str 待添加的船只的id，这个id应该通过GetIDByNickname方法获取
-    nickname: str 待添加的别名
-return: 返回整数，0表示成功，其他数字表示失败
-
-为舰船上传新的别名，在调用这个方法的时候用该特别注意权限控制
-"""
 ERR_NAMEALREADYEXISTS = -1
 
 
 async def AddName(id: str, nickname: str):
+    """
+    AddName
+
+    args:
+        id: str 待添加的船只的id，这个id应该通过GetIDByNickname方法获取
+        nickname: str 待添加的别名
+    return: 返回整数，0表示成功，其他数字表示失败
+
+    为舰船上传新的别名，在调用这个方法的时候用该特别注意权限控制
+    """
     async with aiofiles.open(
         DATA_PATH_STR + "/azurapi_data/names.json", "r", encoding="utf-8"
     ) as fp:
@@ -147,19 +145,20 @@ async def AddName(id: str, nickname: str):
     return 0
 
 
-"""
-function: DelName
-args: 
-    id: str 待删除的船只的id，这个id应该通过GetIDByNickname方法获取
-    nickname: str 待删除的别名
-return: 返回整数，0表示成功，其他数字表示失败
-
-为舰船删除已有的别名，在调用这个方法的时候用该特别注意权限控制
-"""
 ERR_NICKNAMENOTFOUND = -1
 
 
 async def DelName(id: str, nickname: str):
+    """
+    DelName
+
+    args:
+        id: str 待删除的船只的id，这个id应该通过GetIDByNickname方法获取
+        nickname: str 待删除的别名
+    return: 返回整数，0表示成功，其他数字表示失败
+
+    为舰船删除已有的别名，在调用这个方法的时候用该特别注意权限控制
+    """
     async with aiofiles.open(
         DATA_PATH_STR + "/azurapi_data/names.json", "r", encoding="utf-8"
     ) as fp:
@@ -179,20 +178,21 @@ async def DelName(id: str, nickname: str):
     return 0
 
 
-"""
-function: GetStandredNameByNickname
-args: 
-    nickname: str 名称字符串，可以是船只的本名或者别名
-return:
-    如果查找到船只，返回一个包含船只id，标准名和相似度的字典
-    如果没有查找到船只，返回ERR_SHIPNOTFOUND整数值，该值为-1
-
-根据船只的标准名或者别名，查找船只的id和标准名
-"""
 ERR_SHIPNOTFOUND = -1
 
 
 async def GetIDByNickname(nickname: str):
+    """
+    GetStandredNameByNickname
+
+    args:
+        nickname: str 名称字符串，可以是船只的本名或者别名
+    return:
+        如果查找到船只，返回一个包含船只id，标准名和相似度的字典
+        如果没有查找到船只，返回ERR_SHIPNOTFOUND整数值，该值为-1
+
+    根据船只的标准名或者别名，查找船只的id和标准名
+    """
     async with aiofiles.open(
         DATA_PATH_STR + "/azurapi_data/names.json", "r", encoding="utf-8"
     ) as fp:
@@ -233,18 +233,17 @@ async def GetIDByNickname(nickname: str):
     return retvalue
 
 
-"""
-function: GetAllNickname
-args: 
-    id: str 舰船的id，通过GetIDByNickname方法获取
-return:
-    返回一个数组，里面包含这个舰船的所有名称
-
-根据舰船的标准名，返回这个舰船的所有名称
-"""
-
-
 async def GetAllNickname(id: str):
+    """
+    GetAllNickname
+
+    args:
+        id: str 舰船的id，通过GetIDByNickname方法获取
+    return:
+        返回一个数组，里面包含这个舰船的所有名称
+
+    根据舰船的标准名，返回这个舰船的所有名称
+    """
     async with aiofiles.open(
         DATA_PATH_STR + "/azurapi_data/names.json", "r", encoding="utf-8"
     ) as fp:
