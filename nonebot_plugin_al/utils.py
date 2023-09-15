@@ -4,7 +4,7 @@ import pypinyin
 import json
 import aiofiles
 
-from typing import Optional
+from typing import Optional, Tuple, List
 from pathlib import Path
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot_plugin_htmlrender import html_to_pic

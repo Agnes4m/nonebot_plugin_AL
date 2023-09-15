@@ -4,18 +4,14 @@ import random
 from random import choice
 import aiofiles
 from bs4 import BeautifulSoup
-from typing import Optional
 
 from .utils import *
-
-
-
 from .name import *
 
 async def get_data(url:str ,mode:Optional[str] = None):
     """获取网页内容"""
     headers = {
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
     }
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, timeout=600) as response:
@@ -26,12 +22,14 @@ async def get_data(url:str ,mode:Optional[str] = None):
                     return soup
                 elif mode == "str":
                     return await response.text()
+                elif mode == "json":
+                    return await response.json()
                 else:
                     return await response.read()
             else:
                 return None
-            
-        
+
+
 
 
 
@@ -1043,13 +1041,13 @@ async def get_ship_skin_by_id(id, skin_name):
         #     "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "data/al/ship_html/")
         # 在线
         image_path = str(ship_skin_list[0]['image']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         background_path = str(ship_skin_list[0]['background']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         chibi_path = str(ship_skin_list[0]['chibi']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
 
         soup.find(id='img-content')['style'] = "background-image: url('" + background_path + "')"
@@ -1330,3 +1328,44 @@ async def gacha_light_10():
                 gacha_result.append({'id': normal})
     return gacha_result
 
+async def get_server_status(
+        area="官服",
+        server=None,
+        **kwargs
+) -> Tuple[int, str] | List[Tuple[int, str]] | int:
+    """
+    获取服务器状态
+
+    参数:
+        area: 地区("日服", "官服", "渠道服", "ios")
+        server: 服务器名(参见具体服务器)
+
+    返回值:
+        服务器名,状态 或者 0(参数错误) -1(网络错误)
+    """
+    server_address = {
+        "官服": "http://118.178.152.242/?cmd=load_server?",
+        "渠道服": "http://203.107.54.70/?cmd=load_server?",
+        "ios服": "http://101.37.104.227/?cmd=load_server?",
+        "日服": "http://18.179.191.97/?cmd=load_server?"
+    }
+    server_state_mapping = {
+        0: "已开启",
+        1: "维护中",
+        2: "爆满",
+        3: "已满"
+    }
+
+    if address := server_address.get(area, None):
+        if response := await get_data(address, mode="json"):
+            if server:
+                for s in response:
+                    if s.get("name") == server:
+                        return (s.get("name"), server_state_mapping.get(s.get("state")))
+                return -1
+            else:
+                return [(s.get("name"), server_state_mapping.get(s.get("state"))) for s in response]
+        else:
+            return 0
+    else:
+        return -1
