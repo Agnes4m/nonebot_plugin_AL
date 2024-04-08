@@ -28,13 +28,12 @@ GACHA_SIZE = {
 }
 
 
-"""
-class: Datatext
-定义了向图像写入字体的时候，字体的一些属性。
-"""
-
-
 class Datatext:
+    """
+    Datatext
+
+    定义了向图像写入字体的时候，字体的一些属性。
+    """
     # L=X轴，T=Y轴，size=字体大小，fontpath=字体文件，
     def __init__(self, L, T, size, text, path, anchor="lt"):
         self.L = L
@@ -58,35 +57,33 @@ def WriteText(
     return Image.alpha_composite(rgba_image, text_overlay)  # 将绘制之后的透明图像和之前的图像合成
 
 
-"""
-function: DrawText
-args:
-    image: PIL.Image 待操作的图片对象
-    class_text: Datatext Datatext类
-    color: tuple or str 文字的颜色（RGBA表示）
-returns：
-    一个PIL.Image对象，表示写入完成的图片
-"""
-
-
 def DrawText(image, class_text: Datatext, color=(255, 255, 255, 255)):
+    """
+    DrawText
+
+    args:
+        image: PIL.Image 待操作的图片对象
+        class_text: Datatext Datatext类
+        color: tuple or str 文字的颜色（RGBA表示）
+    returns：
+        一个PIL.Image对象，表示写入完成的图片
+    """
     font = class_text.font
     text = class_text.text
     anchor = class_text.anchor
     return WriteText(image, font, text, (class_text.L, class_text.T), color, anchor)
 
 
-"""
-function: DrawFillet
-args:
-    img: PIL.Image 待操作的图片对象
-    ardii: int 表示圆角弧的半径（像素）
-returns：
-    一个PIL.Image对象，表示绘画完成的图片
-"""
-
-
 def DrawFillet(image, radii):
+    """
+    DrawFillet
+
+    args:
+        img: PIL.Image 待操作的图片对象
+        ardii: int 表示圆角弧的半径（像素）
+    returns：
+        一个PIL.Image对象，表示绘画完成的图片
+    """
     # 画圆（用于分离4个角）
     circle = Image.new("L", (radii * 2, radii * 2), 0)  # 创建一个黑色背景的画布
     draw = ImageDraw.Draw(circle)
@@ -107,19 +104,18 @@ def DrawFillet(image, radii):
     return image
 
 
-"""
-function: DrawImage
-args:
-    base_image: PIL.Image 底图
-    upper_image: PIL.Image 待粘贴的图片
-    position: tuple 表示粘贴的起始位置
-    opacity: int 表示透明度，1表示完全不透明，0表示完全透明，默认值是1
-returns：
-    一个PIL.Image对象，表示绘画完成的图片
-"""
-
-
 def DrawImage(base_image, upper_image, position: tuple, opacity=1.0):
+    """
+    DrawImage
+
+    args:
+        base_image: PIL.Image 底图
+        upper_image: PIL.Image 待粘贴的图片
+        position: tuple 表示粘贴的起始位置
+        opacity: int 表示透明度，1表示完全不透明，0表示完全透明，默认值是1
+    returns：
+        一个PIL.Image对象，表示绘画完成的图片
+    """
     base_image.convert("RGBA")
     upper_image.convert("RGBA")
 
@@ -136,17 +132,16 @@ def AddTransparency(img, factor):
     return img
 
 
-"""
-function: Resize
-args:
-    img: PIL.Image 待处理图像
-    size: tuple 表示图像的新大小
-returns：
-    一个PIL.Image对象，表示转换完成的图片
-"""
-
-
 def Resize(img, size: tuple):
+    """
+    Resize
+
+    args:
+        img: PIL.Image 待处理图像
+        size: tuple 表示图像的新大小
+    returns：
+        一个PIL.Image对象，表示转换完成的图片
+    """
     img = img.resize(size, Image.ANTIALIAS)
     return img
 

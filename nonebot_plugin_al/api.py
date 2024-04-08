@@ -4,18 +4,15 @@ import random
 from random import choice
 import aiofiles
 from bs4 import BeautifulSoup
-from typing import Optional
 
 from .utils import *
-
-
-
 from .name import *
 
-async def get_data(url:str ,mode:Optional[str] = None):
+
+async def get_data(url: str, mode: Optional[str] = None):
     """获取网页内容"""
     headers = {
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
     }
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, timeout=600) as response:
@@ -26,18 +23,17 @@ async def get_data(url:str ,mode:Optional[str] = None):
                     return soup
                 elif mode == "str":
                     return await response.text()
+                elif mode == "json":
+                    return await response.json()
                 else:
                     return await response.read()
             else:
                 return None
-            
-        
-
 
 
 async def get_ship_id_by_name(name):
-    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
-                             )as load_f:
+    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'), mode='r', encoding='utf-8'
+                             ) as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
         id = None
@@ -50,17 +46,16 @@ async def get_ship_id_by_name(name):
     return id
 
 
-"""
-方法名：get_ship_data_by_name
-参数：name(string)
-返回值：result(字典)
-说明：该方法作用是通过碧蓝航线api，用舰船名称获取舰船数据，返回一个数据字典供html适配数据调用
-"""
-
-
 async def get_ship_data_by_name(name):
-    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
-                             )as load_f:
+    """
+    get_ship_data_by_name
+
+    参数：name(string)
+    返回值：result(字典)
+    说明：该方法作用是通过碧蓝航线api，用舰船名称获取舰船数据，返回一个数据字典供html适配数据调用
+    """
+    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'), mode='r', encoding='utf-8'
+                             ) as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
     for result in load_dict:
@@ -71,16 +66,16 @@ async def get_ship_data_by_name(name):
     return None
 
 
-"""
-方法名：get_ship_data_by_id
-参数：name(string)
-返回值：result(字典)
-说明：该方法作用是通过碧蓝航线api，用舰船id获取舰船数据，返回一个数据字典供html适配数据调用
-"""
-
 async def get_ship_data_by_id(id):
-    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'),mode='r',encoding='utf-8'
-                             )as load_f:
+    """
+    get_ship_data_by_id
+
+    参数：name(string)
+    返回值：result(字典)
+    说明：该方法作用是通过碧蓝航线api，用舰船id获取舰船数据，返回一个数据字典供html适配数据调用
+    """
+    async with aiofiles.open(DATA_PATH.joinpath('azurapi_data', 'ships.json'), mode='r', encoding='utf-8'
+                             ) as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
     for result in load_dict:
@@ -89,22 +84,25 @@ async def get_ship_data_by_id(id):
         else:
             continue
     return None
-"""
-方法名：format_data_into_html
-参数：data(字典)
-返回值：无
-说明：该方法作用是通过传入的舰船数据字典，用beautifulsoup适配数据到html
-"""
+
+
 
 
 async def format_data_into_html(data):
+    """
+    format_data_into_html
+
+    参数：data(字典)
+    返回值：无
+    说明：该方法作用是通过传入的舰船数据字典，用beautifulsoup适配数据到html
+    """
     # 读入html备用
     soup = BeautifulSoup(open(DATA_PATH.joinpath('ship_html', 'ship_temp.html'), encoding='UTF-8'), "lxml")
     # 读入bwiki数据
-    with open('test.json','w') as f:
-        json.dump(data,f, ensure_ascii=True,indent=4)
-    async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ships_plus.json'),mode='r',encoding='utf-8'
-                            )as load_f:
+    with open('test.json', 'w') as f:
+        json.dump(data, f, ensure_ascii=True, indent=4)
+    async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ships_plus.json'), mode='r', encoding='utf-8'
+                             ) as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
     data_plus = {}
@@ -309,6 +307,16 @@ async def format_data_into_html(data):
     soup.find(id='class').string = class_
     type = str(data['hullType'])
     retrofitHullType = None
+
+    def data_process(retrofitHullType: list):
+        soup.find(id='type').append(soup.new_tag("br"))
+        soup.find(id='type').append("改")
+        soup.find(id='type').append(soup.new_tag("br"))
+        soup.find(id='type').append(
+            soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
+        soup.find(id='type').append(soup.new_tag("br"))
+        soup.find(id='type').append(str(retrofitHullType[0]))
+
     if 'retrofitHullType' in data:
         retrofitHullType = translate_ship_type(str(data['retrofitHullType']))
     if type == 'Aircraft Carrier':
@@ -317,216 +325,132 @@ async def format_data_into_html(data):
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-CV_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("航空母舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Destroyer' and str(data['id']) != '472':
         # type = "<img src='type_icon/30px-DD_img40.png'/> 驱逐舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-DD_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("驱逐舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Light Cruiser':
         # type = "<img src='type_icon/30px-CL_img40.png'/> 轻型巡洋舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-CL_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("轻型巡洋舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Heavy Cruiser':
         # type = "<img src='type_icon/30px-CA_img40.png'/> 重型巡洋舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-CA_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("重型巡洋舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Battleship':
         # type = "<img src='type_icon/30px-BB_img40.png'/> 战列舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-BB_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("战列舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Light Carrier':
         # type = "<img src='type_icon/30px-CVL_img40.png'/> 轻型航空母舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-CVL_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("轻型航空母舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Repair':
         # type = "<img src='type_icon/30px-AR_img40.png'/> 维修舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-AR_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("维修舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Battlecruiser':
         # type = "<img src='type_icon/30px-BC_img40.png'/> 战列巡洋舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-BC_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("战列巡洋舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Monitor':
         # type = "<img src='type_icon/30px-BM_img40.png'/> 浅水重炮舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-BM_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("浅水重炮舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Submarine':
         # type = "<img src='type_icon/30px-SS_img40.png'/> 潜艇"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-SS_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("潜艇")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Submarine Carrier':
         # type = "<img src='type_icon/30px-SSV_img40.png'/> 潜水母舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-SSV_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("潜水母舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Munition Ship' or str(data['id']) == '472':
         # type = "<img src='type_icon/30px-AE_img40.png'/> 运输舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-AE_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("运输舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Large Cruiser':
         # type = "<img src='type_icon/30px-CB_img40.png'/> 超级巡洋舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-CB_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("超级巡洋舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     if type == 'Aviation Battleship':
         # type = "<img src='type_icon/30px-BBV_img40.png'/> 航空战列舰"
         soup.find(id='type').string = ''
         soup.find(id='type').append(soup.new_tag("img", src="type_icon/30px-BBV_img40.png"))
         soup.find(id='type').append(soup.new_tag("br"))
         soup.find(id='type').append("航空战列舰")
-        if retrofitHullType is not None:
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append("改")
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(
-                soup.new_tag("img", src="type_icon/30px-" + str(retrofitHullType[1]) + "_img40.png"))
-            soup.find(id='type').append(soup.new_tag("br"))
-            soup.find(id='type').append(str(retrofitHullType[0]))
+        if retrofitHullType:
+            data_process(retrofitHullType)
     # 性格
-    character = str(data_plus.get('性格',''))
+    character = str(data_plus.get('性格', ''))
     soup.find(id='character').string = character
     # 身份
-    who = str(data_plus.get('身份',''))
+    who = str(data_plus.get('身份', ''))
     soup.find(id='who').string = who
     # 关键词
-    keyword = str(data_plus.get('关键词',''))
+    keyword = str(data_plus.get('关键词', ''))
     soup.find(id='keyword').string = keyword
     # 持有物
-    holdings = str(data_plus.get('持有物',''))
+    holdings = str(data_plus.get('持有物', ''))
     soup.find(id='holdings').string = holdings
     # 发色瞳色
-    hair = str(data_plus.get('发色',''))
-    eyes = str(data_plus.get('瞳色',''))
+    hair = str(data_plus.get('发色', ''))
+    eyes = str(data_plus.get('瞳色', ''))
     soup.find(id='hair_eyes').string = hair
     soup.find(id='hair_eyes').append(soup.new_tag('br'))
     soup.find(id="hair_eyes").append(eyes)
     # 萌点
-    adorable = str(data_plus.get('萌点',''))
+    adorable = str(data_plus.get('萌点', ''))
     soup.find(id='adorable').string = adorable
     # 评价
     if '评价' in data_plus:
@@ -652,7 +576,7 @@ async def format_data_into_html(data):
     # 1号栏武器装备
     slots_1_efficiency = str(data['slots'][0]['minEfficiency']) + "% → " + str(data['slots'][0]['maxEfficiency']) + "%"
     soup.find(id='slots_1_efficiency').string = slots_1_efficiency
-    slots_1_equippable = str(data_plus.get('武器装备',[{}])[0].get('类型',str(data['slots'][0]['type'])))  # str(data['slots'][0]['type'])
+    slots_1_equippable = str(data_plus.get('武器装备', [{}])[0].get('类型', str(data['slots'][0]['type'])))  # str(data['slots'][0]['type'])
     soup.find(id='slots_1_equippable').string = slots_1_equippable
     slots_1_max = str(data['slots'][0]['max'])
     soup.find(id='slots_1_max').string = slots_1_max
@@ -660,7 +584,7 @@ async def format_data_into_html(data):
     # 2号栏武器装备
     slots_2_efficiency = str(data['slots'][1]['minEfficiency']) + "% → " + str(data['slots'][1]['maxEfficiency']) + "%"
     soup.find(id='slots_2_efficiency').string = slots_2_efficiency
-    slots_2_equippable = str(data_plus.get('武器装备',[{},{}])[1].get('类型',str(data['slots'][1]['type'])))  # str(data['slots'][1]['type'])
+    slots_2_equippable = str(data_plus.get('武器装备', [{}, {}])[1].get('类型', str(data['slots'][1]['type'])))  # str(data['slots'][1]['type'])
     soup.find(id='slots_2_equippable').string = slots_2_equippable
     slots_2_max = str(data['slots'][1]['max'])
     soup.find(id='slots_2_max').string = slots_2_max
@@ -668,7 +592,7 @@ async def format_data_into_html(data):
     # 3号栏武器装备
     slots_3_efficiency = str(data['slots'][2]['minEfficiency']) + "% → " + str(data['slots'][2]['maxEfficiency']) + "%"
     soup.find(id='slots_3_efficiency').string = slots_3_efficiency
-    slots_3_equippable = str(data_plus.get('武器装备',[{},{},{}])[2].get('类型',str(data['slots'][2]['type'])))  # str(data['slots'][2]['type'])
+    slots_3_equippable = str(data_plus.get('武器装备', [{}, {}, {}])[2].get('类型', str(data['slots'][2]['type'])))  # str(data['slots'][2]['type'])
     soup.find(id='slots_3_equippable').string = slots_3_equippable
     slots_3_max = str(data['slots'][2]['max'])
     soup.find(id='slots_3_max').string = slots_3_max
@@ -682,7 +606,7 @@ async def format_data_into_html(data):
             skill_text += ("<tr><td ><img src='" + str(skills[i]['icon']).replace(
                 "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "") \
                            + "' width='60px' height='60px'/>" + str(skills[i]['names']['cn']) \
-                           + "</td></tr><tr><td>" + str(data_plus.get('技能', [{},{},{},{},{},{}])[i].get('效果',str(skills[i]['description']))) + "</td></tr>")  # 被逼无奈只能这样
+                           + "</td></tr><tr><td>" + str(data_plus.get('技能', [{}, {}, {}, {}, {}, {}])[i].get('效果', str(skills[i]['description']))) + "</td></tr>")  # 被逼无奈只能这样
     except:
         pass
     extraSoup = BeautifulSoup(skill_text, "lxml")
@@ -697,15 +621,15 @@ async def format_data_into_html(data):
         break_1 = break_2 = break_3 = str_1 = str_2 = str_3 = ''
         for break_ in breaks[0]:
             str_1 += ("" + str(break_) + "<br>")
-        break_1 = ("" + str(data_plus.get('突破',[{},{}])[1].get('一阶',str_1)).replace('/', '<br>●'))
+        break_1 = ("" + str(data_plus.get('突破', [{}, {}])[1].get('一阶', str_1)).replace('/', '<br>●'))
         break_text.append(break_1)
         for break_ in breaks[1]:
             str_2 += ("" + str(break_) + "<br>")
-        break_2 = ("●" + str(data_plus.get('突破',[{},{},{}])[2].get('二阶',str_2)).replace('/', '<br>●'))
+        break_2 = ("●" + str(data_plus.get('突破', [{}, {}, {}])[2].get('二阶', str_2)).replace('/', '<br>●'))
         break_text.append(break_2)
         for break_ in breaks[2]:
             str_3 += ("" + str(break_) + "<br>")
-        break_3 = ("●" + str(data_plus.get('突破',[{},{},{},{}])[3].get('三阶',str_3)).replace('/', '<br>●'))
+        break_3 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}])[3].get('三阶', str_3)).replace('/', '<br>●'))
         break_text.append(break_3)
         for i in range(0, 3):
             breaks_tr_body += (
@@ -718,30 +642,30 @@ async def format_data_into_html(data):
         breaks = data["devLevels"]  # 数组
         breaks_tr_body = ''
         break_text = []
-        break_1 = break_2 = break_3 = break_4 = break_5 = break_6 = str_1 = str_2 = str_3 = str_4 = str_5 = str_6=''
+        break_1 = break_2 = break_3 = break_4 = break_5 = break_6 = str_1 = str_2 = str_3 = str_4 = str_5 = str_6 = ''
         for break_ in breaks[0]['buffs']:
             str_1 += ("●" + str(break_) + "<br>")
-        break_1 = ("●" + str(data_plus.get('突破',[{},{},{}])[2].get('5级',str_1)).replace('/', '<br>●'))
+        break_1 = ("●" + str(data_plus.get('突破', [{}, {}, {}])[2].get('5级', str_1)).replace('/', '<br>●'))
         break_text.append(break_1)
         for break_ in breaks[1]['buffs']:
             str_2 += ("●" + str(break_) + "<br>")
-        break_2 = ("●" + str(data_plus.get('突破',[{},{},{},{}])[3].get('10级',str_2)).replace('/', '<br>●'))
+        break_2 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}])[3].get('10级', str_2)).replace('/', '<br>●'))
         break_text.append(break_2)
         for break_ in breaks[2]['buffs']:
             str_3 += ("●" + str(break_) + "<br>")
-        break_3 = ("●" + str(data_plus.get('突破',[{},{},{},{},{}])[4].get('15级',str_3)).replace('/', '<br>●'))
+        break_3 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}, {}])[4].get('15级', str_3)).replace('/', '<br>●'))
         break_text.append(break_3)
         for break_ in breaks[3]['buffs']:
             str_4 += ("●" + str(break_) + "<br>")
-        break_4 = ("●" + str(data_plus.get('突破',[{},{},{},{},{},{}])[5].get('20级',str_4)).replace('/', '<br>●'))
+        break_4 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}, {}, {}])[5].get('20级', str_4)).replace('/', '<br>●'))
         break_text.append(break_4)
         for break_ in breaks[4]['buffs']:
             str_5 += ("●" + str(break_) + "<br>")
-        break_5 = ("●" + str(data_plus.get('突破',[{},{},{},{},{},{},{}])[6].get('25级',str_5)).replace('/', '<br>●'))
+        break_5 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}, {}, {}, {}])[6].get('25级', str_5)).replace('/', '<br>●'))
         break_text.append(break_5)
         for break_ in breaks[5]['buffs']:
             str_6 += ("●" + str(break_) + "<br>")
-        break_6 = ("●" + str(data_plus.get('突破',[{},{},{},{},{},{},{},{}])[7].get('30级',str_6)).replace('/', '<br>●'))
+        break_6 = ("●" + str(data_plus.get('突破', [{}, {}, {}, {}, {}, {}, {}, {}])[7].get('30级', str_6)).replace('/', '<br>●'))
         break_text.append(break_6)
         for i in range(0, 6):
             breaks_tr_body += (
@@ -806,7 +730,7 @@ async def format_data_into_html(data):
                             "<tr><th  scope='col' width='100px'>名称</th><td>" + "改造" + "</td><th  scope='col'width='100px'>Live2D</th><td>" + live2d + "</td></tr>")
 
                 skin_text += ("<tr><th  scope='col' width='100px'>名称</th><td>" + str(skin['info'][
-                                                                                        'cnClient']) + "</td><th  scope='col'width='100px'>Live2D</th><td>" + live2d + "</td></tr>")
+                                                                                           'cnClient']) + "</td><th  scope='col'width='100px'>Live2D</th><td>" + live2d + "</td></tr>")
             except:
                 continue
     extraSoup = BeautifulSoup(skin_text, "lxml")
@@ -815,7 +739,7 @@ async def format_data_into_html(data):
     # 处理完毕，保存
 
     async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_info.html'),
-              'w', encoding="utf-8") as fp:
+                             'w', encoding="utf-8") as fp:
         await fp.write(str(soup.prettify()))
 
     if 'retrofitHullType' in data:
@@ -1009,21 +933,21 @@ async def format_data_into_html(data):
         retrofit_soup.find(id='avatar').img.replace_with(retrofit_soup.new_tag("img", src="images/Texture2D/" + pinyin(
             str(data['names']['cn']).replace("·", "").replace("-", "").replace(" ", "").replace(".", "")) + '_g.png'))
         async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_retrofit.html'),
-                  'w', encoding="utf-8") as fp:
+                                 'w', encoding="utf-8") as fp:
             await fp.write(str(retrofit_soup.prettify()))
         return 1  # 1可以改造，就去适配改造数据
     else:
         return 0  # 0不可以改造，就跳过
 
-"""
-方法名：get_ship_skin_by_name
-参数：ship_name(string),skin_name(string),if_chibi(string)
-返回值：0 / 1
-说明：该方法作用是通过碧蓝航线api，用舰船名称获取舰船皮肤数据，再调用openCV把图片合成，供机器人发送 ,成功0 失败1
-"""
-
 
 async def get_ship_skin_by_id(id, skin_name):
+    """
+    get_ship_skin_by_name
+
+    参数：ship_name(string),skin_name(string),if_chibi(string)
+    返回值：0 / 1
+    说明：该方法作用是通过碧蓝航线api，用舰船名称获取舰船皮肤数据，再调用openCV把图片合成，供机器人发送 ,成功0 失败1
+    """
     soup = BeautifulSoup(
         open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
              encoding='UTF-8'),
@@ -1043,13 +967,13 @@ async def get_ship_skin_by_id(id, skin_name):
         #     "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", "data/al/ship_html/")
         # 在线
         image_path = str(ship_skin_list[0]['image']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         background_path = str(ship_skin_list[0]['background']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
         chibi_path = str(ship_skin_list[0]['chibi']).replace(
-            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/", 
+            "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/",
             "https://ghproxy.com/https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/")
 
         soup.find(id='img-content')['style'] = "background-image: url('" + background_path + "')"
@@ -1059,7 +983,7 @@ async def get_ship_skin_by_id(id, skin_name):
             soup.new_tag('img', src=chibi_path, style="position: fixed;bottom: 0;left: 0;"))
         DATA_PATH.joinpath('ship_html', 'ship_skin.html')
         async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
-                  'w', encoding="utf-8") as fp:
+                                 'w', encoding="utf-8") as fp:
             await fp.write(str(soup.prettify()))
         return 0
 
@@ -1082,7 +1006,7 @@ async def get_ship_skin_by_id(id, skin_name):
                     soup.new_tag('img', src=chibi_path, style="position: fixed;bottom: 0;left: 0;"))
 
                 async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
-                          'w', encoding="utf-8") as fp:
+                                         'w', encoding="utf-8") as fp:
                     await fp.write(str(soup.prettify()))
                 return 0
     # 处理改造
@@ -1102,7 +1026,7 @@ async def get_ship_skin_by_id(id, skin_name):
                     soup.new_tag('img', src=chibi_path, style="position: fixed;bottom: 0;left: 0;"))
 
                 async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
-                          'w', encoding="utf-8") as fp:
+                                         'w', encoding="utf-8") as fp:
                     await fp.write(str(soup.prettify()))
                 return 0
     # 处理普通皮肤
@@ -1124,7 +1048,7 @@ async def get_ship_skin_by_id(id, skin_name):
                     soup.new_tag('img', src=chibi_path, style="position: fixed;bottom: 0;left: 0;"))
 
                 async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
-                          'w', encoding="utf-8") as fp:
+                                         'w', encoding="utf-8") as fp:
                     await fp.write(str(soup.prettify()))
                 return 0
             else:
@@ -1132,7 +1056,6 @@ async def get_ship_skin_by_id(id, skin_name):
         except:
             continue
     return 4
-
 
 
 async def get_ship_skin_by_id_with_index(id, index):
@@ -1163,54 +1086,48 @@ async def get_ship_skin_by_id_with_index(id, index):
             soup.new_tag('img', src=chibi_path, style="position: fixed;bottom: 0;left: 0;"))
         DATA_PATH.joinpath('ship_html', 'ship_skin.html')
         async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_skin.html'),
-                  'w', encoding="utf-8") as fp:
+                                 'w', encoding="utf-8") as fp:
             await fp.write(str(soup.prettify()))
         return 0
 
 
-
-
-
-"""
-方法名：get_random_gallery
-参数：无
-返回值：字符串
-说明：该方法随机返回游戏加载图像的随机文件名
-"""
-
-
 def get_random_gallery():
+    """
+    get_random_gallery
+
+    参数：无
+    返回值：字符串
+    说明：该方法随机返回游戏加载图像的随机文件名
+    """
     gallery_path = Path(DATA_PATH, 'ship_html', 'images', 'gallery').resolve()
     files = [f.relative_to(gallery_path) for f in gallery_path.iterdir() if f.is_file()]
     rfile = random.choice(files)
     return str(rfile)
 
 
-"""
-方法名：get_pve_recommendation
-参数列表：无
-用处：爬取bwiki的PVE舰船推荐图表
-返回值：div_list(数组)，url集合
-"""
-
-
 async def get_pve_recommendation():
+    """
+    get_pve_recommendation
+
+    参数列表：无
+    用处：爬取bwiki的PVE舰船推荐图表
+    返回值：div_list(数组)，url集合
+    """
     url = "https://wiki.biligame.com/blhx/%E4%BA%95%E5%8F%B7%E7%A2%A7%E8%93%9D%E6%A6%9C%E5%90%88%E9%9B%86"
-    response_text:str = await get_data(url,mode='text')
+    response_text: str = await get_data(url, mode='text')
     soup = BeautifulSoup(response_text, "lxml")
     div_list = soup.find_all(class_='floatnone')
     return div_list
 
 
-"""
-方法名：get_ship_weapon_by_ship_name
-参数列表：name(string)
-用处：根据船名获取bwiki的推荐装备，生成html
-返回值：无
-"""
-
-
 async def get_ship_weapon_by_ship_name(name):
+    """
+    get_ship_weapon_by_ship_name
+
+    参数列表：name(string)
+    用处：根据船名获取bwiki的推荐装备，生成html
+    返回值：无
+    """
     # 这里不知道怎么改，先注释问原作者
     # url = "https://wiki.biligame.com/blhx/" + str(name)
     # response_text:str = await get_data(url,mode='text')
@@ -1221,23 +1138,23 @@ async def get_ship_weapon_by_ship_name(name):
              encoding='UTF-8'), "lxml")
     # target_soup.find('body').append(div_list)
     async with aiofiles.open(DATA_PATH.joinpath('ship_html', 'ship_weapon.html'),
-              'w', encoding="utf-8") as fp:
+                             'w', encoding="utf-8") as fp:
         await fp.write(str(target_soup.prettify()))
 
 
 async def force_update_offline():
     Path(SAVE_PATH, 'azurapi_data').mkdir(parents=True, exist_ok=True)
-    ship_list = await get_data(SHIP_LIST,mode = 'str')
-    chapter_list = await get_data(CHAPTER_LIST,mode = 'str')
-    equipment_list = await get_data(EQUIPMENT_LIST,mode = 'str')
-    version_info = await get_data(VERSION_INFO,mode = 'str')
-    memories_info = await get_data(MEMORIES_INFO,mode = 'str')
+    ship_list = await get_data(SHIP_LIST, mode='str')
+    chapter_list = await get_data(CHAPTER_LIST, mode='str')
+    equipment_list = await get_data(EQUIPMENT_LIST, mode='str')
+    version_info = await get_data(VERSION_INFO, mode='str')
+    memories_info = await get_data(MEMORIES_INFO, mode='str')
 
     async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'ships.json'), 'wb') as f:
         await f.write(json.dumps(ship_list, ensure_ascii=False).encode())
     async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'chapters.json'), 'wb') as f:
         await f.write(json.dumps(chapter_list, ensure_ascii=False).encode())
-    async with aiofiles.open(SAVE_PATH.joinpath( 'azurapi_data', 'equipments.json'), 'wb') as f:
+    async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'equipments.json'), 'wb') as f:
         await f.write(json.dumps(equipment_list, ensure_ascii=False).encode())
     async with aiofiles.open(SAVE_PATH.joinpath('azurapi_data', 'version-info.json'), 'wb') as f:
         await f.write(json.dumps(version_info, ensure_ascii=False).encode())
@@ -1246,13 +1163,13 @@ async def force_update_offline():
 
 
 async def get_recent_event():
-    base_url='https://wiki.biligame.com'
+    base_url = 'https://wiki.biligame.com'
     url = "https://wiki.biligame.com/blhx/首页"
-    response_text:str = await get_data(url,mode='text')
+    response_text: str = await get_data(url, mode='text')
     soup = BeautifulSoup(response_text, "lxml")
-    div_list=soup.find(class_='wikitable eventCalendar noselect')
-    if div_list.a['href'] is not None and str( div_list.a['href'])!='':
-        return base_url+str(div_list.a['href'])
+    div_list = soup.find(class_='wikitable eventCalendar noselect')
+    if div_list.a['href'] is not None and str(div_list.a['href']) != '':
+        return base_url + str(div_list.a['href'])
     else:
         return None
 
@@ -1264,22 +1181,21 @@ async def gacha_heavy_10():
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
-        for i in range(0,10):
-            flag = random.randint(0,999)
+        for i in range(0, 10):
+            flag = random.randint(0, 999)
             if flag < 70:
-                superRare= await get_ship_id_by_name (choice(load_dict['HeavyShipBuildingListSuperRare']))
-                gacha_result.append({'id':superRare})
+                superRare = await get_ship_id_by_name(choice(load_dict['HeavyShipBuildingListSuperRare']))
+                gacha_result.append({'id': superRare})
             if 70 <= flag < 190:
-                elite = await get_ship_id_by_name (choice(load_dict['HeavyShipBuildingListElite']))
+                elite = await get_ship_id_by_name(choice(load_dict['HeavyShipBuildingListElite']))
                 gacha_result.append({'id': elite})
             if 190 <= flag < 450:
-                rare = await get_ship_id_by_name (choice(load_dict['HeavyShipBuildingListRare']))
+                rare = await get_ship_id_by_name(choice(load_dict['HeavyShipBuildingListRare']))
                 gacha_result.append({'id': rare})
             if 450 <= flag < 1000:
-                normal = await get_ship_id_by_name (choice(load_dict['HeavyShipBuildingListNormal']))
+                normal = await get_ship_id_by_name(choice(load_dict['HeavyShipBuildingListNormal']))
                 gacha_result.append({'id': normal})
     return gacha_result
-
 
 
 async def gacha_special_10():
@@ -1289,22 +1205,21 @@ async def gacha_special_10():
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
-        for i in range(0,10):
-            flag = random.randint(0,999)
+        for i in range(0, 10):
+            flag = random.randint(0, 999)
             if flag < 70:
-                superRare= await get_ship_id_by_name (choice(load_dict['SpecialShipBuildingListSuperRare']))
-                gacha_result.append({'id':superRare})
+                superRare = await get_ship_id_by_name(choice(load_dict['SpecialShipBuildingListSuperRare']))
+                gacha_result.append({'id': superRare})
             if 70 <= flag < 190:
-                elite = await get_ship_id_by_name (choice(load_dict['SpecialShipBuildingListElite']))
+                elite = await get_ship_id_by_name(choice(load_dict['SpecialShipBuildingListElite']))
                 gacha_result.append({'id': elite})
             if 190 <= flag < 450:
-                rare = await get_ship_id_by_name (choice(load_dict['SpecialShipBuildingListRare']))
+                rare = await get_ship_id_by_name(choice(load_dict['SpecialShipBuildingListRare']))
                 gacha_result.append({'id': rare})
             if 450 <= flag < 1000:
-                normal = await get_ship_id_by_name (choice(load_dict['SpecialShipBuildingListNormal']))
+                normal = await get_ship_id_by_name(choice(load_dict['SpecialShipBuildingListNormal']))
                 gacha_result.append({'id': normal})
     return gacha_result
-
 
 
 async def gacha_light_10():
@@ -1314,19 +1229,61 @@ async def gacha_light_10():
                              encoding='UTF-8') as load_f:
         load_dict = await load_f.read()
         load_dict = await str_to_json(load_dict)
-        for i in range(0,10):
-            flag = random.randint(0,999)
+        for i in range(0, 10):
+            flag = random.randint(0, 999)
             if flag < 70:
-                superRare= await get_ship_id_by_name (choice(load_dict['LightShipBuildingListSuperRare']))
-                gacha_result.append({'id':superRare})
+                superRare = await get_ship_id_by_name(choice(load_dict['LightShipBuildingListSuperRare']))
+                gacha_result.append({'id': superRare})
             if 70 <= flag < 190:
-                elite = await get_ship_id_by_name (choice(load_dict['LightShipBuildingListElite']))
+                elite = await get_ship_id_by_name(choice(load_dict['LightShipBuildingListElite']))
                 gacha_result.append({'id': elite})
             if 190 <= flag < 450:
-                rare = await get_ship_id_by_name (choice(load_dict['LightShipBuildingListRare']))
+                rare = await get_ship_id_by_name(choice(load_dict['LightShipBuildingListRare']))
                 gacha_result.append({'id': rare})
             if 450 <= flag < 1000:
-                normal = await get_ship_id_by_name (choice(load_dict['LightShipBuildingListNormal']))
+                normal = await get_ship_id_by_name(choice(load_dict['LightShipBuildingListNormal']))
                 gacha_result.append({'id': normal})
     return gacha_result
 
+
+async def get_server_status(
+        area="官服",
+        server=None,
+        **kwargs
+) -> Tuple[int, str] | List[Tuple[int, str]] | int:
+    """
+    获取服务器状态
+
+    参数:
+        area: 地区("日服", "官服", "渠道服", "ios")
+        server: 服务器名(参见具体服务器)
+
+    返回值:
+        服务器名,状态 或者 0(参数错误) -1(网络错误)
+    """
+    server_address = {
+        "官服": "http://118.178.152.242/?cmd=load_server?",
+        "渠道服": "http://203.107.54.70/?cmd=load_server?",
+        "ios服": "http://101.37.104.227/?cmd=load_server?",
+        "日服": "http://18.179.191.97/?cmd=load_server?"
+    }
+    server_state_mapping = {
+        0: "已开启",
+        1: "维护中",
+        2: "爆满",
+        3: "已满"
+    }
+
+    if address := server_address.get(area, None):
+        if response := await get_data(address, mode="json"):
+            if server:
+                for s in response:
+                    if s.get("name") == server:
+                        return (s.get("name"), server_state_mapping.get(s.get("state")))
+                return -1
+            else:
+                return [(s.get("name"), server_state_mapping.get(s.get("state"))) for s in response]
+        else:
+            return 0
+    else:
+        return -1

@@ -11,37 +11,28 @@ from nonebot_plugin_htmlrender import (
 
 from .api import get_data
 
+rank_mapping = {
+    "强度榜": "认知觉醒主线推荐榜.jpg",
+    "装备榜": "装备一图榜.jpg",
+    "金部件榜": "金部件推荐榜.jpg",
+    "萌新榜": "萌新入坑舰船推荐榜.png",
+    "兵器榜": "兵装推荐榜.jpg",
+    "专武榜": "专武推荐榜.png",
+    "兑换榜": "兑换装备推荐榜.png",
+    "研发榜": "装备研发推荐榜.png",
+    "改造榜": "改造舰船推荐榜.png",
+    "跨队榜": "跨队舰船推荐榜.png",
+    "pt榜": "新晋指挥官pt兑换榜.png",
+    "氪金榜": "氪金榜主榜.png",
+    "打捞主线榜": "井号打捞表主线地图.png",
+    "打捞作战榜": "井号打捞表作战档案.png",
+}
+
 async def jinghao(tag):
     data = await get_data('https://wiki.biligame.com/blhx/井号碧蓝榜合集')
     soup = BeautifulSoup(data, 'html.parser')
-    if tag == '强度榜':
-        img_tag = soup.find('img', alt="认知觉醒主线推荐榜.jpg")
-    elif tag == '装备榜':
-        img_tag = soup.find('img', alt="装备一图榜.jpg")
-    elif tag == '金部件榜':
-        img_tag = soup.find('img', alt="金部件推荐榜.jpg")
-    elif tag == '萌新榜':
-        img_tag = soup.find('img', alt="萌新入坑舰船推荐榜.png")
-    elif tag == '兵器榜':
-        img_tag = soup.find('img', alt="兵装推荐榜.jpg")
-    elif tag == '专武榜':
-        img_tag = soup.find('img', alt="专武推荐榜.png")
-    elif tag == '兑换榜':
-        img_tag = soup.find('img', alt="兑换装备推荐榜.png")
-    elif tag == '研发榜':
-        img_tag = soup.find('img', alt="装备研发推荐榜.png")
-    elif tag == '改造榜':
-        img_tag = soup.find('img', alt="改造舰船推荐榜.png")
-    elif tag == '跨队榜':
-        img_tag = soup.find('img', alt="跨队舰船推荐榜.png")
-    elif tag == 'pt榜':
-        img_tag = soup.find('img', alt="新晋指挥官pt兑换榜.png")
-    elif tag == '氪金榜':
-        img_tag = soup.find('img', alt="氪金榜主榜.png")
-    elif tag == '打捞主线榜':
-        img_tag = soup.find('img', alt="井号打捞表主线地图.png")
-    elif tag == '打捞作战榜':
-        img_tag = soup.find('img', alt="井号打捞表作战档案.png")
+    if tag:
+        img_tag = soup.find('img', alt=rank_mapping.get(tag))
     else:
         return None
     img_src = img_tag.get('src')

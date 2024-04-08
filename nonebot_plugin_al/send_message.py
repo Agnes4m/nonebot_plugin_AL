@@ -10,8 +10,6 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.params import CommandArg
 from nonebot.matcher import Matcher
-from nonebot.log import logger
-from nonebot_plugin_htmlrender import html_to_pic
 
 from .api import *
 from .utils import *
